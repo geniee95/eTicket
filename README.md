@@ -459,10 +459,9 @@ http PATCH http://localhost:8088/reservations/3 status=CANCELLED
 ### 얘역 취소 후 view - 예약은 'CANCELLED', 티켓은 '예약가능', 가격은 VIP 등급 할인전 가격(수요일 20%만 적용)
 http GET http://localhost:8088/views/3
 ```
-![image](https://user-images.githubusercontent.com/36217195/123550449-7148b500-d7a8-11eb-9b12-84a21ed2781e.png)
+![image](https://user-images.githubusercontent.com/36217195/123551034-03ea5380-d7ab-11eb-9038-87a582b7ab05.png)
 ![image](https://user-images.githubusercontent.com/36217195/123550459-858cb200-d7a8-11eb-855e-0bc31e4352bc.png)
-![image](https://user-images.githubusercontent.com/36217195/123550503-bcfb5e80-d7a8-11eb-9092-88bc737679b1.png)
-
+![image](https://user-images.githubusercontent.com/36217195/123551055-20868b80-d7ab-11eb-9685-7af1b9596600.png)
 
 
 
