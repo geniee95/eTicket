@@ -52,6 +52,7 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 
 ### Event 도출
 
+![image](https://user-images.githubusercontent.com/36217195/123536252-36bd2900-d764-11eb-9f2d-8063df0c857c.png)
 
 
 
