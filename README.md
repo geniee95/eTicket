@@ -428,6 +428,19 @@ http POST http://localhost:8088/reservations ticketId=4 userId=B userGrade=VIP
 ### 예약 실패 케이스 - endtime이 예약시점 이전인 티켓 예약 시도
 http POST http://localhost:8088/reservations ticketId=5 userId=B userGrade=VIP    
 ```
+![image](https://user-images.githubusercontent.com/36217195/123550154-385c1080-d7a7-11eb-826a-c6dab4fc1047.png)
+![image](https://user-images.githubusercontent.com/36217195/123550185-604b7400-d7a7-11eb-90e6-fb7bcf4f2efb.png)
+![image](https://user-images.githubusercontent.com/36217195/123550208-83762380-d7a7-11eb-9848-76d762d1a31a.png)
+![image](https://user-images.githubusercontent.com/36217195/123550279-c932ec00-d7a7-11eb-9e18-9e59ce5e9133.png)
+![image](https://user-images.githubusercontent.com/36217195/123550282-cdf7a000-d7a7-11eb-8375-8905f3b5e7fc.png)
+![image](https://user-images.githubusercontent.com/36217195/123550328-00090200-d7a8-11eb-8cc8-8945c517a44f.png)
+![image](https://user-images.githubusercontent.com/36217195/123550364-1a42e000-d7a8-11eb-8cb2-4de3831efd5c.png)
+
+
+
+
+
+
 
 
 
