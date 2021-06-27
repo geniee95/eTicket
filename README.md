@@ -401,16 +401,52 @@ http GET http://localhost:8088/prices
 ![image](https://user-images.githubusercontent.com/36217195/123546655-7dc51180-d798-11eb-98b2-47fb016a5722.png)
 
 
-```
-
 ### [예약 및 사용자 등급별 할인가격 적용]
 3. 사용자는 티켓을 예약한다. 
 4. 티켓의 상태가 '예약가능'이고, 만료일이 경과하지 않았을 때 예약 가능하고, 티켓의 상태는 '예약됨'으로 변경된다. 
 5. 사용자 등급이 'VIP'일때는 추가 할인 혜택이 적용된다. 
 
+```Shall
+### 예약 성공 케이스 - 화요일 티켓, Silver 등급 사용자로 할인이 적용되지 않음
+http POST http://localhost:8088/reservations ticketId=1 userId=A userGrade=Silver   
+http GET http://localhost:8088/tickets/1
+http GET http://localhost:8088/prices/1
+
+### 예약 성공 케이스 - 수요일 티켓(20% 할인 정책), Silver 등급 사용자로 추가 할인 없음
+http POST http://localhost:8088/reservations ticketId=2 userId=A userGrade=Silver   
+http GET http://localhost:8088/tickets/2
+http GET http://localhost:8088/prices/2
+
+### 예약 성공 케이스 - 수요일 티켓(20% 할인 정책), VIP 등급 사용자(1000원 추가 할인)
+http POST http://localhost:8088/reservations ticketId=3 userId=B userGrade=VIP
+http GET http://localhost:8088/tickets/3
+http GET http://localhost:8088/prices/3
+
+### 예약 실패 케이스 - 이미 '예약됨' 상태의 티켓 예약 시도
+http POST http://localhost:8088/reservations ticketId=4 userId=B userGrade=VIP   
+
+### 예약 실패 케이스 - endtime이 예약시점 이전인 티켓 예약 시도
+http POST http://localhost:8088/reservations ticketId=5 userId=B userGrade=VIP    
+```
+
+
+
 ### [예약 취소]
 6. 사용자는 티켓 예약을 취소할 수 있다.
-7. 관리자와 사용자는 티켓 정보, 사용자 예약현황, 가격을 조회할 수 있다.초기 데이터는 아래와 같이 정의하였다.
+7. 관리자와 사용자는 티켓 정보, 사용자 예약현황, 가격을 조회할 수 있다.
+```Shall
+### 예약 취소 전 view (3번 티켓 예약된 상황)
+http GET http://localhost:8088/views/3
+
+### 예약 취소
+http PATCH http://localhost:8088/reservations/3 status=CANCELLED 
+
+### 얘역 취소 후 view - 예약은 'CANCELLED', 티켓은 '예약가능', 가격은 VIP 등급 할인전 가격(수요일 20%만 적용)
+http GET http://localhost:8088/views/3
+```
+
+
+
 
 
 
