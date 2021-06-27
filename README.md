@@ -96,6 +96,17 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 
 ### 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
 
+![image](https://user-images.githubusercontent.com/36217195/123537839-90295600-d76c-11eb-8a61-f1c1d26dd95e.png)
+
+
+![image](https://user-images.githubusercontent.com/36217195/123537855-a59e8000-d76c-11eb-9c0a-a1c78a5e13bd.png)
+
+
+![image](https://user-images.githubusercontent.com/36217195/123537887-d383c480-d76c-11eb-9342-9055172240cd.png)
+
+
+
+![image](https://user-images.githubusercontent.com/36217195/123537943-20679b00-d76d-11eb-92fb-4dee049377c7.png)
 
 
 
