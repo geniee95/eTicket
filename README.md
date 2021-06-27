@@ -471,20 +471,20 @@ reservation 서비스는 hsql DB를, ticket, price 서비스는 h2 DB를 적용�
 
 ### reservation의 pom.xml DB 설정 코드
 ```xml
-		<dependency>
-			<groupId>org.hsqldb</groupId>
-			<artifactId>hsqldb</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+<dependency>
+	<groupId>org.hsqldb</groupId>
+	<artifactId>hsqldb</artifactId>
+	<scope>runtime</scope>
+</dependency>
 ```
 
 ### ticket, price 서비스의 pom.xml DB 설정 코드
 ```xml
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
+<dependency>
+	<groupId>com.h2database</groupId>
+	<artifactId>h2</artifactId>
+	<scope>runtime</scope>
+</dependency>
 ```
 
 
