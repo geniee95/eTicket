@@ -457,106 +457,10 @@ http PATCH http://localhost:8088/reservations/3 status=CANCELLED
 ### 얘역 취소 후 view - 예약은 'CANCELLED', 티켓은 '예약가능', 가격은 VIP 등급 할인전 가격(수요일 20%만 적용)
 http GET http://localhost:8088/views/3
 ```
+![image](https://user-images.githubusercontent.com/36217195/123550449-7148b500-d7a8-11eb-9b12-84a21ed2781e.png)
+![image](https://user-images.githubusercontent.com/36217195/123550459-858cb200-d7a8-11eb-855e-0bc31e4352bc.png)
+![image](https://user-images.githubusercontent.com/36217195/123550503-bcfb5e80-d7a8-11eb-9092-88bc737679b1.png)
 
-
-
-
-
-
-    [Bike 등록]
-    http POST http://20.194.44.70:8080/bikes bikeid=1 status=사용가능 location=분당_정자역_1구역
-    http POST http://20.194.44.70:8080/bikes bikeid=2 status=사용중 location=분당_정자역_1구역
-    http POST http://20.194.44.70:8080/bikes bikeid=3 status=불량 location=분당_정자역_1구역
-    
-    [Bike 확인]
-    http GET http://20.194.44.70:8080/bikes
- ![image](https://user-images.githubusercontent.com/84724396/121111431-d1070c80-c849-11eb-9de0-7e625c5a7c42.png)
-
- 
-
-타 마이크로서비스의 데이터 원본에 접근없이(Composite 서비스나 조인SQL 등 없이) 도 조회가 가능하도록 rentAndBillingView 서비스의 CQRS를 통하여 Costomer Center 서비스를 구현하였다.
-rentAndBillingView View를 통하여 사용자가 rental한 bike 정보와 billing 정보를 조회할 수 있으며 반납 후 billing 상태를 확인할 수 있다. 
-
-### 2.자전거 대여
-### 2.1 대여(rent) 화면
-    http POST http://20.194.44.70:8080/rents userid=1 bikeid=1
-    
-![image](https://user-images.githubusercontent.com/84724396/121114074-0e6d9900-c84e-11eb-970c-82c39fa6350d.png)
-
-### 2.2 대여(rent) 후 bikes 화면
-     자전거 상태가 '사용 가능' -> '사용중' 으로 변경된다.     
-     http GET http://20.194.44.70:8080/bikes
-
-![사용중](https://user-images.githubusercontent.com/84724396/121121127-fd2a8980-c859-11eb-9955-54988c8b331e.PNG)
-    
-### 2.3 대여(rent) 후 billings 화면
-    bill이 하나 생성된다.
-    http GET http://20.194.44.70:8080/billings
-
-![image](https://user-images.githubusercontent.com/84724396/121126700-901bf180-c863-11eb-9b92-22cc6d227ff4.png)
-
-
-### 2.4 대여(rent) 후 rentAndBillingView 화면(CQRS)
-    rent한 정보를 조회할 수 있다.
-    http GET http://20.194.44.70:8080/rentAndBillingViews
-
-![image](https://user-images.githubusercontent.com/84724396/121114171-34933900-c84e-11eb-98b6-b02faf2e5b6b.png)
-
-### 3. 반납(return)  
-### 3.1 반납(return) 화면
-     http PATCH http://20.194.44.70:8080/rents/1 endlocation=분당_정자역_3구역
-
-![image](https://user-images.githubusercontent.com/84724396/121116196-1b3fbc00-c851-11eb-8a4c-8cd4820edda7.png)
-
-### 3.2 반납(return) 후 bike 화면
-     자전거 상태가 '사용중' -> '사용 가능'으로 변경된다.
-     http GET http://20.194.44.70:8080/bikes
-    
-![사용가능](https://user-images.githubusercontent.com/84724396/121120558-c30cb800-c858-11eb-96a5-c8c54c9945b5.PNG)
-
-
-### 3.3 반납(return) 후 userDeposit 화면
-    요금이 계산되어 deposit이 차감된다.
-    http GET http://20.194.44.70:8080/userDeposits
-
-![image](https://user-images.githubusercontent.com/84724396/121115821-8b017700-c850-11eb-8c05-02510b6189af.png)
-
-
-### 3.4 반납(return) 후 bill 화면
-    bill 이 종료된다.
-    http GET http://20.194.44.70:8080/billings
-    
-![image](https://user-images.githubusercontent.com/84724396/121126749-a3c75800-c863-11eb-84d2-bab86df2299f.png)
-
-
-### 3.5 반납(return) 후 rentAndBillingView 화면(CQRS)
-    rent와 billing 정보를 조회한다.
-    http GET http://20.194.44.70:8080/rentAndBillingViews
-
-![image](https://user-images.githubusercontent.com/84724396/121115890-a66c8200-c850-11eb-8d7d-bd73289a35e5.png)
-
-
-### 4. 자전거 대여 불가 화면 (Request / Response)
-
-     1. rent 신청를 하면 bike에서 자전거 상태를 체크하고 '사용 가능'일 때만 rent 가 성공한다.    
-     http POST http://20.194.44.70:8080/rents bikeid=2 userid=2
-
-![image](https://user-images.githubusercontent.com/84724396/121115300-e2ebae00-c84f-11eb-9266-8c05b0a3f2d3.png)
-
-
-![image](https://user-images.githubusercontent.com/84724396/121115456-10d0f280-c850-11eb-9377-c33ef6e31514.png)
-
-      2. 자전거 생태 체크를 하는 bike 서비스를 내리고 rent 신청을 하면 자전거 생태 체크를 할 수 없어 rent를 할 수 없다.
-
-![오류1](https://user-images.githubusercontent.com/84724396/121119465-a3749000-c856-11eb-8772-f00832f5c3fd.PNG)
-
-
-    위와 같이 Rent -> Bike -> Return -> Billing -> userDeposit 순으로 Sequence Flow 가 정상동작하는 것을 확인할 수 있다.
-    (대여불가 자전거는 예외)
-
-    대여 후 Status가 "사용중"으로, 반납하면 Status가 "사용가능"으로 Update 되는 것을 볼 수 있으며 반납이후 사용자의 예치금은 정산 후 차감된다.
-
-    또한 Correlation을 key를 활용하여 userid, rentid, bikeid, billid 등 원하는 값을 서비스간의 I/F를 통하여 서비스 간에 트랜잭션이 묶여 있음을 알 수 있다.
 
 
 
