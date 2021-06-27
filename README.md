@@ -372,10 +372,10 @@ public interface TicketRepository extends PagingAndSortingRepository<Ticket, Lon
 
 1. 관리자는 티켓을 등록한다. 
 2. 티켓이 등록되면, 티켓의 기본 가격이 할당되고 정책에 따라 할인가격이 적용된다. 
-* 기본 가격 정책은 티켓의 starttime 이 수요일/목요일일 때 20% 할인이 적용된다.
-* 아래 케이스에서 
-  * ticketId=2, 3의 starttime인 2021-07-07 이 수요일이고, 
-  * ticketId=5 의 starttime인 2020-06-25 이 목요일이다. 
+  * 기본 가격 정책은 티켓의 starttime 이 수요일/목요일일 때 20% 할인이 적용된다.
+  * 아래 케이스에서 
+    * ticketId=2, 3의 starttime인 2021-07-07 이 수요일이고, 
+    * ticketId=5 의 starttime인 2020-06-25 이 목요일이다. 
    
    
 ```Shell
