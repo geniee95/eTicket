@@ -140,108 +140,6 @@
 
 
 # 구현
-
-분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 구현한 각 서비스의 실행방법은 아래와 같다.
-(포트넘버 : 8081 ~ 8084, 8088)
-```shell
-cd reservation
-mvn spring-boot:run  
-
-cd ticket
-mvn spring-boot:run
-
-cd price
-mvn spring-boot:run 
-
-cd view
-mvn spring-boot:run  
-    
-cd gateway
-mvn spring-boot:run
-```
-
-## Gateway 적용
-API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 Gateay를 적용하였다.
- ```yaml  
-server:
-  port: 8088
-
----
-
-spring:
-  profiles: default
-  cloud:
-    gateway:
-      routes:
-        - id: reservation
-          uri: http://localhost:8081
-          predicates:
-            - Path=/reservations/** 
-        - id: ticket
-          uri: http://localhost:8082
-          predicates:
-            - Path=/tickets/** 
-        - id: price
-          uri: http://localhost:8083
-          predicates:
-            - Path=/prices/** 
-        - id: view
-          uri: http://localhost:8084
-          predicates:
-            - Path= /views/**
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "*"
-            allowedMethods:
-              - "*"
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
-
-
----
-
-spring:
-  profiles: docker
-  cloud:
-    gateway:
-      routes:
-        - id: reservation
-          uri: http://reservation:8080
-          predicates:
-            - Path=/reservations/** 
-        - id: ticket
-          uri: http://ticket:8080
-          predicates:
-            - Path=/tickets/** 
-        - id: price
-          uri: http://price:8080
-          predicates:
-            - Path=/prices/** 
-        - id: view
-          uri: http://view:8080
-          predicates:
-            - Path= /views/**
-      globalcors:
-        corsConfigurations:
-          '[/**]':
-            allowedOrigins:
-              - "*"
-            allowedMethods:
-              - "*"
-            allowedHeaders:
-              - "*"
-            allowCredentials: true
-
-server:
-  port: 8080
- ```   
-    
-    
-    
-    
 ## DDD 적용
 MSAEZ.io를 통하여 도출된 Aggregate는 Entity로 선언하였고, Repository Pattern을 적용하기 위해 Spring Data REST의 RestRepository를 적용하였다. 
 
@@ -366,6 +264,107 @@ public interface TicketRepository extends PagingAndSortingRepository<Ticket, Lon
 ```
 
 
+분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 구현한 각 서비스의 실행방법은 아래와 같다.
+(포트넘버 : 8081 ~ 8084, 8088)
+```shell
+cd reservation
+mvn spring-boot:run  
+
+cd ticket
+mvn spring-boot:run
+
+cd price
+mvn spring-boot:run 
+
+cd view
+mvn spring-boot:run  
+    
+cd gateway
+mvn spring-boot:run
+```
+
+## Gateway 적용
+API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 Gateay를 적용하였다.
+ ```yaml  
+server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: reservation
+          uri: http://localhost:8081
+          predicates:
+            - Path=/reservations/** 
+        - id: ticket
+          uri: http://localhost:8082
+          predicates:
+            - Path=/tickets/** 
+        - id: price
+          uri: http://localhost:8083
+          predicates:
+            - Path=/prices/** 
+        - id: view
+          uri: http://localhost:8084
+          predicates:
+            - Path= /views/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: reservation
+          uri: http://reservation:8080
+          predicates:
+            - Path=/reservations/** 
+        - id: ticket
+          uri: http://ticket:8080
+          predicates:
+            - Path=/tickets/** 
+        - id: price
+          uri: http://price:8080
+          predicates:
+            - Path=/prices/** 
+        - id: view
+          uri: http://view:8080
+          predicates:
+            - Path= /views/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
+ ```   
+
+이후 시나리오 검증은 Gateway를 적용한 상태에서 수행한다.    
+
+
 ## 시나리오 검증
 
 ### [티켓 등록 및 가격 계산]
@@ -406,7 +405,7 @@ http GET http://localhost:8088/prices
 4. 티켓의 상태가 '예약가능'이고, 만료일이 경과하지 않았을 때 예약 가능하고, 티켓의 상태는 '예약됨'으로 변경된다. 
 5. 사용자 등급이 'VIP'일때는 추가 할인 혜택이 적용된다. 
 
-```Shall
+```Shell
 ### CASE 1) 예약 성공 - 화요일 티켓, Silver 등급 사용자로 할인이 적용되지 않음
 http POST http://localhost:8088/reservations ticketId=1 userId=A userGrade=Silver   
 http GET http://localhost:8088/tickets/1
@@ -449,7 +448,7 @@ CASE 5) 예약 실패 - endtime이 예약시점 이전인 티켓 예약 시도
 ### [예약 취소]
 6. 사용자는 티켓 예약을 취소할 수 있다.
 7. 관리자와 사용자는 티켓 정보, 사용자 예약현황, 가격을 조회할 수 있다.
-```Shall
+```Shell
 ### 예약 취소 전 view (3번 티켓 예약된 상황)
 http GET http://localhost:8088/views/3
 
@@ -490,96 +489,88 @@ reservation 서비스는 hsql DB를, ticket, price 서비스는 h2 DB를 적용�
 
 # 운영
 ## namespace 생성
-	  kubectl create ns gbike
+```shell
+kubectl create ns eticket
+```
 
 ## Deploy / Pipeline
 ### git에서 소스 가져오기
-	git clone https:/github.com/skcc-1st-team/gbike.git
-
+```shell
+git clone https://github.com/geniee95/eTicket.git
+```
 ### Build 하기
+```shell
+cd reservation
+mvn package
 
-	cd /home/project/gbike/bike
-	mvn clean
-	mvn compile
-	mvn package
+cd ticket
+mvn package
 
-	cd /home/project/gbike/billing
-	mvn clean
-	mvn compile
-	mvn package
+cd price
+mvn package
 
-	cd /home/project/gbike/rent
-	mvn clean
-	mvn compile
-	mvn package
+cd view
+mvn package
 
-	cd /home/project/gbike/rentAndBillingView
-	mvn clean
-	mvn compile
-	mvn package
+cd gateway
+mvn package
+```
+### Docker Image Build/Push, deploy/service 생성 (yaml 이용)
+```shell
+cd reservation
+az acr build --registry genie --image genie.azurecr.io/reservation:v1 .
+kubectl create -f ./kubernetes/deployment.yml -n eticket
+kubectl create -f ./kubernetes/service.yaml -n eticket
 
-	cd /home/project/gbike/userDeposit
-	mvn clean
-	mvn compile
-	mvn package
+cd ticket
+az acr build --registry genie --image genie.azurecr.io/ticket:v1 .
+kubectl create -f ./kubernetes/deployment.yml -n eticket
+kubectl create -f ./kubernetes/service.yaml -n eticket
 
-	cd /home/project/gbike/gateway
-	mvn clean
-	mvn compile
-	mvn package
+cd price
+az acr build --registry genie --image genie.azurecr.io/price:v1 .
+kubectl create -f ./kubernetes/deployment.yml -n eticket
+kubectl create -f ./kubernetes/service.yaml -n eticket
 
-### Docker Image Push/deploy/서비스생성
+cd view
+az acr build --registry genie --image genie.azurecr.io/view:v1 .
+kubectl create -f ./kubernetes/deployment.yml -n eticket
+kubectl create -f ./kubernetes/service.yaml -n eticket
 
-	cd /home/project/gbike/bike
-	az acr build --registry skcc1team --image skcc1team.azurecr.io/bike:latest .
-	kubectl create deploy bike --image=skcc1team.azurecr.io/bike:latest -n gbike
-	kubectl expose deploy bike --type=ClusterIP --port=8080 -n gbike
-
-	cd /home/project/gbike/billing
-	az acr build --registry skcc1team --image skcc1team.azurecr.io/billing:latest .
-	kubectl create deploy billing --image=skcc1team.azurecr.io/billing:latest -n gbike
-	kubectl expose deploy billing --type=ClusterIP --port=8080 -n gbike
-
-	cd /home/project/gbike/rent
-	az acr build --registry skcc1team --image skcc1team.azurecr.io/rent:latest .
-	kubectl create deploy rent --image=skcc1team.azurecr.io/rent:latest -n gbike
-	kubectl expose deploy rent --type=ClusterIP --port=8080 -n gbike
-
-	cd /home/project/gbike/rentAndBillingView
-	az acr build --registry skcc1team --image skcc1team.azurecr.io/rentandbillingview:latest .
-	kubectl create deploy rentandbillingview --image=skcc1team.azurecr.io/rentandbillingview:latest -n gbike
-	kubectl expose deploy rentandbillingview --type=ClusterIP --port=8080 -n gbike
-
-	cd /home/project/gbike/userDeposit
-	az acr build --registry skcc1team --image skcc1team.azurecr.io/userdeposit:latest .
-	kubectl create deploy userdeposit --image=skcc1team.azurecr.io/userdeposit:latest -n gbike
-	kubectl expose deploy userdeposit --type=ClusterIP --port=8080 -n gbike
-
-	cd /home/project/gbike/gateway
-	az acr build --registry skcc1team --image skcc1team.azurecr.io/gateway:latest .
-	kubectl create deploy gateway --image=skcc1team.azurecr.io/gateway:latest -n gbike
-	kubectl expose deploy gateway --type=LoadBalancer --port=8080 -n gbike
-
-### yml파일 이용한 deploy
-
-	cd /home/project/gbike/rent
-	kubectl apply -f ./kubernetes/deployment.yml -n gbike
-
-- deployment.yml 파일
-
-![image](https://user-images.githubusercontent.com/82796103/121019311-43d89f00-c7da-11eb-8744-7c42d81baca4.png)
-
+cd gateway
+az acr build --registry genie --image genie.azurecr.io/gateway:v1 .
+kubectl create -f ./kubernetes/deployment.yml -n eticket
+kubectl create -f ./kubernetes/service.yaml -n eticket
+```	
 
 ### Deploy 완료
 
-![image](https://user-images.githubusercontent.com/82796103/121105067-479e0d00-c83e-11eb-93a6-4a051d7eb45f.png)
+[TODO] 이미지 캡쳐
 
 
 
 ## ConfigMap
-	시스템별로 변경 가능성이 있는 설정들을 ConfigMap을 사용하여 관리한다.
+* 시스템별로 변경 가능성이 있는 설정들을 ConfigMap을 사용하여 관리한다.
+	* reservation 서비스에서 호출하는 ticket 서비스 url을 ConfigMap을 사용하여 구현하였다. 
 	
 ### application.yml 파일에 ${api.url.bikeservice} 설정
+
+* reservation application.yaml 설정
+
+
+* FeignClient 호출부분 
+
+
+* reservation deploy.yaml 에 env 설정
+
+
+* configmap 생성 및 조회
+```shell
+kubectl create configmap ticketurl --from-literal=url=http://ticket:8080 -n eticket
+kubectl get configmap ticketurl -o yaml -n eticket
+```
+
+
 ![image](https://user-images.githubusercontent.com/82796103/121114706-1c6fe980-c84f-11eb-8e86-024a6e33a3e8.png)
 
 ![image](https://user-images.githubusercontent.com/82796103/121021504-6cfa2f00-c7dc-11eb-9269-528765e63ab1.png)
