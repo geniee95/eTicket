@@ -1,4 +1,5 @@
-![image](https://user-images.githubusercontent.com/82796103/120915696-27f0d280-c6e0-11eb-8c50-ef2441ddd473.png)
+![image](https://user-images.githubusercontent.com/36217195/123538820-8b1ad580-d771-11eb-883c-005c50b20180.png)
+
 
 
 # 서비스시나리오
@@ -52,32 +53,41 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 
 ### Event 도출
 
+![image](https://user-images.githubusercontent.com/36217195/123536311-826fd280-d764-11eb-8816-0980f1ef8f07.png)
+
 
 
 
 ### 부적격 Event 탈락
 
+![image](https://user-images.githubusercontent.com/36217195/123536406-15107180-d765-11eb-8bf1-bd3f1a18f9d1.png)
 
+- 중복되거나 잘못된 도메인 이벤트들을 걸러내는 작업을 수행함
+- 현업이 사용하는 용어를 그대로 사용(Ubiquitous Language)
 
 
 ### Actor, Command 부착
 
+![image](https://user-images.githubusercontent.com/36217195/123536612-5a816e80-d766-11eb-9c4a-4bacd895a146.png)
 
 
 
 
 ### Aggregate 로 묶기
 
+![image](https://user-images.githubusercontent.com/36217195/123536708-eeebd100-d766-11eb-9078-926f85142462.png)
 
 
 
 ### Bounded Context로 묶기
 
+![image](https://user-images.githubusercontent.com/36217195/123536851-9e28a800-d767-11eb-8c6f-c02af09d575d.png)
 
 
 
 ### Policy 부착/이동 및 Context Mapping (괄호는 수행주체)
 
+![image](https://user-images.githubusercontent.com/36217195/123537225-4d19b380-d769-11eb-9dde-41bfa940ca4e.png)
 
 
 ### 완성된 모형
@@ -87,16 +97,29 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 
 ### 완성본에 대한 기능적/비기능적 요구사항을 커버하는지 검증
 
+![image](https://user-images.githubusercontent.com/36217195/123537839-90295600-d76c-11eb-8a61-f1c1d26dd95e.png)
+
+
+![image](https://user-images.githubusercontent.com/36217195/123537855-a59e8000-d76c-11eb-9c0a-a1c78a5e13bd.png)
+
+
+![image](https://user-images.githubusercontent.com/36217195/123537887-d383c480-d76c-11eb-9342-9055172240cd.png)
+
+
+
+![image](https://user-images.githubusercontent.com/36217195/123537943-20679b00-d76d-11eb-92fb-4dee049377c7.png)
 
 
 
 ### 비기능 요구사항에 대한 검증
 
+![image](https://user-images.githubusercontent.com/36217195/123538161-62451100-d76e-11eb-8c71-167696c19d6a.png)
 
 
 
 ## 헥사고날 아키텍처 다이어그램 도출
 
+![image](https://user-images.githubusercontent.com/36217195/123538459-febbe300-d76f-11eb-9cf5-ca71034d0bde.png)
 
 
 
