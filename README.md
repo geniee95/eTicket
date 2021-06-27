@@ -368,18 +368,38 @@ public interface TicketRepository extends PagingAndSortingRepository<Ticket, Lon
 
 ## 시나리오 검증
 
-## 1. 초기데이터 구축
-초기 데이터는 아래와 같이 정의하였다.
+### [티켓 등록 및 가격 계산]
 
-    [UserDeposit 등록]
-    http POST http://20.194.44.70:8080/userDeposits userid=1 deposit=100000
-    http POST http://20.194.44.70:8080/userDeposits userid=2 deposit=200000
-    http POST http://20.194.44.70:8080/userDeposits userid=3 deposit=200000
-    
-    [UserDeposit 확인]
-    http GET http://20.194.44.70:8080/userDeposits
- 
- ![image](https://user-images.githubusercontent.com/84724396/121111293-9309e880-c849-11eb-8e74-9263cf46e734.png)
+1. 관리자는 티켓을 등록한다. 
+2. 티켓이 등록되면, 티켓의 기본 가격이 할당되고 정책에 따라 할인가격이 적용된다. 
+   (기본 가격 정책은 티켓의 starttime 이 수요일/목요일일 때 20% 할인이 적용된다.)
+```Shell
+### 티켓 등록 ###
+http POST http://localhost:8088/tickets ticketId=1 status=예약가능 starttime=2021-07-06 endtime=2021-07-06
+http POST http://localhost:8088/tickets ticketId=2 status=예약가능 starttime=2021-07-07 endtime=2021-07-07
+http POST http://localhost:8088/tickets ticketId=3 status=예약가능 starttime=2021-07-07 endtime=2021-07-07
+http POST http://localhost:8088/tickets ticketId=4 status=예약됨 starttime=2021-12-31 endtime=2021-12-31
+http POST http://localhost:8088/tickets ticketId=5 status=예약가능 starttime=2020-06-25 endtime=2020-06-25
+```   
+
+```Shell
+### 티켓 생성 결과 확인 ###
+http GET http://localhost:8088/tickets
+```
+```Shell
+###v기본 가격할당 및 정책에 따른 할인가격 적용###
+http GET http://localhost:8088/prices
+```
+
+### [예약 및 사용자 등급별 할인가격 적용]
+3. 사용자는 티켓을 예약한다. 
+4. 티켓의 상태가 '예약가능'이고, 만료일이 경과하지 않았을 때 예약 가능하고, 티켓의 상태는 '예약됨'으로 변경된다. 
+5. 사용자 등급이 'VIP'일때는 추가 할인 혜택이 적용된다. 
+
+### [예약 취소]
+6. 사용자는 티켓 예약을 취소할 수 있다.
+7. 관리자와 사용자는 티켓 정보, 사용자 예약현황, 가격을 조회할 수 있다.초기 데이터는 아래와 같이 정의하였다.
+
 
 
     [Bike 등록]
