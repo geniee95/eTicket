@@ -386,6 +386,8 @@ http POST http://localhost:8088/tickets ticketId=5 status=예약가능 starttime
 ### 티켓 생성 결과 확인 ###
 http GET http://localhost:8088/tickets
 ```
+![image](https://user-images.githubusercontent.com/36217195/123546120-48b7bf80-d796-11eb-9eb7-3d74a2b6e8b9.png)
+
 ```Shell
 ###v기본 가격할당 및 정책에 따른 할인가격 적용###
 http GET http://localhost:8088/prices
