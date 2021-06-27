@@ -59,7 +59,10 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 
 ### 부적격 Event 탈락
 
+![image](https://user-images.githubusercontent.com/36217195/123536406-15107180-d765-11eb-8bf1-bd3f1a18f9d1.png)
 
+- 중복되거나 잘못된 도메인 이벤트들을 걸러내는 작업을 수행함
+- 현업이 사용하는 용어를 그대로 사용(Ubiquitous Language)
 
 
 ### Actor, Command 부착
