@@ -80,6 +80,7 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 
 ### Bounded Context로 묶기
 
+![image](https://user-images.githubusercontent.com/36217195/123536851-9e28a800-d767-11eb-8c6f-c02af09d575d.png)
 
 
 
