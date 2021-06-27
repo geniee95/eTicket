@@ -556,12 +556,15 @@ kubectl create -f ./kubernetes/service.yaml -n eticket
 ### application.yml 파일에 ${api.url.bikeservice} 설정
 
 * reservation application.yaml 설정
+![image](https://user-images.githubusercontent.com/36217195/123554634-dd80e400-d7bb-11eb-8beb-b0384dde29c4.png)
 
 
 * FeignClient 호출부분 
+![image](https://user-images.githubusercontent.com/36217195/123554643-e2de2e80-d7bb-11eb-8a72-1767fc2349f4.png)
 
 
 * reservation deploy.yaml 에 env 설정
+![image](https://user-images.githubusercontent.com/36217195/123554648-ea053c80-d7bb-11eb-80e5-7eac086d26f4.png)
 
 
 * configmap 생성 및 조회
@@ -569,17 +572,9 @@ kubectl create -f ./kubernetes/service.yaml -n eticket
 kubectl create configmap ticketurl --from-literal=url=http://ticket:8080 -n eticket
 kubectl get configmap ticketurl -o yaml -n eticket
 ```
+[TODO 그립 확인할 것!!]
+![image](https://user-images.githubusercontent.com/36217195/123554691-22a51600-d7bc-11eb-9711-e2fe475fd2ce.png)
 
-
-![image](https://user-images.githubusercontent.com/82796103/121114706-1c6fe980-c84f-11eb-8e86-024a6e33a3e8.png)
-
-![image](https://user-images.githubusercontent.com/82796103/121021504-6cfa2f00-c7dc-11eb-9269-528765e63ab1.png)
-
-### deployment-config.yaml
-![image](https://user-images.githubusercontent.com/82796103/121037602-8a35fa00-c7ea-11eb-889e-d8a03ae445b6.png)
-
-### configMap 
-![image](https://user-images.githubusercontent.com/82796103/121039821-61166900-c7ec-11eb-9c88-a9bb5221f924.png)
 
 
 ## Autoscale (HPA)
