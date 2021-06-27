@@ -407,41 +407,39 @@ http GET http://localhost:8088/prices
 5. 사용자 등급이 'VIP'일때는 추가 할인 혜택이 적용된다. 
 
 ```Shall
-### 예약 성공 케이스 - 화요일 티켓, Silver 등급 사용자로 할인이 적용되지 않음
+### CASE 1) 예약 성공 - 화요일 티켓, Silver 등급 사용자로 할인이 적용되지 않음
 http POST http://localhost:8088/reservations ticketId=1 userId=A userGrade=Silver   
 http GET http://localhost:8088/tickets/1
 http GET http://localhost:8088/prices/1
 
-### 예약 성공 케이스 - 수요일 티켓(20% 할인 정책), Silver 등급 사용자로 추가 할인 없음
+### CASE 2) 예약 성공 - 수요일 티켓(20% 할인 정책), Silver 등급 사용자로 추가 할인 없음
 http POST http://localhost:8088/reservations ticketId=2 userId=A userGrade=Silver   
 http GET http://localhost:8088/tickets/2
 http GET http://localhost:8088/prices/2
 
-### 예약 성공 케이스 - 수요일 티켓(20% 할인 정책), VIP 등급 사용자(1000원 추가 할인)
+### CASE 3) 예약 성공 - 수요일 티켓(20% 할인 정책), VIP 등급 사용자(1000원 추가 할인)
 http POST http://localhost:8088/reservations ticketId=3 userId=B userGrade=VIP
 http GET http://localhost:8088/tickets/3
 http GET http://localhost:8088/prices/3
 
-### 예약 실패 케이스 - 이미 '예약됨' 상태의 티켓 예약 시도
+### CASE 4) 예약 실패 - 이미 '예약됨' 상태의 티켓 예약 시도
 http POST http://localhost:8088/reservations ticketId=4 userId=B userGrade=VIP   
 
-### 예약 실패 케이스 - endtime이 예약시점 이전인 티켓 예약 시도
+### CASE 5) 예약 실패 - endtime이 예약시점 이전인 티켓 예약 시도
 http POST http://localhost:8088/reservations ticketId=5 userId=B userGrade=VIP    
 ```
+CASE 1) 예약 성공 - 화요일 티켓, Silver 등급 사용자로 할인이 적용되지 않음
 ![image](https://user-images.githubusercontent.com/36217195/123550154-385c1080-d7a7-11eb-826a-c6dab4fc1047.png)
+CASE 2) 예약 성공 - 수요일 티켓(20% 할인 정책), Silver 등급 사용자로 추가 할인 없음
 ![image](https://user-images.githubusercontent.com/36217195/123550185-604b7400-d7a7-11eb-90e6-fb7bcf4f2efb.png)
+CASE 3) 예약 성공 - 수요일 티켓(20% 할인 정책), VIP 등급 사용자(1000원 추가 할인)
 ![image](https://user-images.githubusercontent.com/36217195/123550208-83762380-d7a7-11eb-9848-76d762d1a31a.png)
+CASE 4) 예약 실패 - 이미 '예약됨' 상태의 티켓 예약 시도
 ![image](https://user-images.githubusercontent.com/36217195/123550279-c932ec00-d7a7-11eb-9e18-9e59ce5e9133.png)
 ![image](https://user-images.githubusercontent.com/36217195/123550282-cdf7a000-d7a7-11eb-8375-8905f3b5e7fc.png)
+CASE 5) 예약 실패 - endtime이 예약시점 이전인 티켓 예약 시도
 ![image](https://user-images.githubusercontent.com/36217195/123550328-00090200-d7a8-11eb-8cc8-8945c517a44f.png)
 ![image](https://user-images.githubusercontent.com/36217195/123550364-1a42e000-d7a8-11eb-8cb2-4de3831efd5c.png)
-
-
-
-
-
-
-
 
 
 ### [예약 취소]
