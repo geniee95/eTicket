@@ -4,48 +4,50 @@
 
 # 서비스시나리오
 
-기능적 요구사항
-
+## 기능적 요구사항
+```
 1. 관리자는 티켓을 등록한다. 
 2. 티켓이 등록되면, 티켓의 기본 가격이 할당되고 정책에 따라 할인가격이 적용된다. 
 3. 사용자는 티켓을 예약한다. 
 4. 티켓의 상태가 '예약가능'이고, 만료일이 경과하지 않았을 때 예약 가능하고, 티켓의 상태는 '예약됨'으로 변경된다. 
 5. 사용자 등급이 'VIP'일때는 추가 할인 혜택이 적용된다. 
-6. 사용자는 티켓 예약을 취소할 수 있다. 
-7. 관리자와 사용자는 티켓 정보, 예약현황, 가격정보를 조회할 수 있다. 
-(결재는 본 시나리오에 적용하지 않음)
+6. 사용자는 티켓 예약을 취소할 수 있다.
+7. 관리자와 사용자는 티켓 정보, 사용자 예약현황, 가격을 조회할 수 있다.
+```
+## 비기능적 요구사항
 
-비기능적 요구사항
-
+```
 1. 트랜잭션
-i. 티켓 예약 전에 티켓의 상태가 '예약가능'이고, 만료일이 경과하지 않았는지를 반드시 확인한다. -> Synch 호출
-ii. 티켓 예약을 취소하면 티켓의 상태가 '예약가능'으로 변경되고, 사용자 등급에 따라 적용된 추가 할인 정책이 원상복구 되어야 한다.  --> SAGA, 보상 트랜잭션
+  - 티켓 예약 전에 티켓의 상태가 '예약가능'이고, 만료일이 경과하지 않았는지를 반드시 확인한다. -> Synch 호출
+  - 사용자가 예약을 취소하면 티켓의 상태가 '예약가능'으로 변경되고, 가격도 사용자 등급에 따라 적용된 추가 할인 정책이 원상복구 되어야 한다.  --> SAGA, 보상 트랜잭션
 
 2. 장애격리
-i. 티켓관리(ticket) 서비스가 과중되면, 예약(reservation)을 잠시 후에 하도록 유도한다. --> Circuit breaker, fallback
-ii. 가격정책(pricing) 서비스가 수행되지 않더라도 365일 24시간 티켓예약을 취소할 수 있어야 한다. --> Asynch(event-driven), Eventual Consistency
+  - 티켓관리(ticket) 서비스가 과중되면, 예약(reservation)을 잠시 후에 하도록 유도한다. --> Circuit breaker, fallback
+  - 가격정책(pricing) 서비스가 수행되지 않더라도 365일 24시간 티켓예약을 취소할 수 있어야 한다. --> Asynch(event-driven), Eventual Consistency
 
 3. 성능
-i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시 성능을 고려하여 별도의 view로 구성한다. --> CQRS
+  - 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시 성능을 고려하여 별도의 view로 구성한다. --> CQRS
+```
 
 
 # 체크포인트
-
-	1. Saga
-	2. CQRS
-	3. Correlation
-	4. Req/Resp
-	5. Gateway
-	6. Deploy/ Pipeline
-    7. Polyglot
-    8. Config Map/ Persistence Volume
-    9. Circuit Breaker
-	10. Autoscale (HPA)
-	11. Zero-downtime deploy (Readiness Probe)
-	12.Self-healing (Liveness Probe)
- 
+```
+1. Saga
+2. CQRS
+3. Correlation
+4. Req/Resp
+5. Gateway
+6. Deploy/ Pipeline
+7. Polyglot
+8. Config Map/ Persistence Volume
+9. Circuit Breaker
+10. Autoscale (HPA)
+11. Zero-downtime deploy (Readiness Probe)
+12.Self-healing (Liveness Probe)
+ ```
  
 # 분석/설계
+
 
 ## Event Storming 결과
 * MSAEz 로 모델링한 이벤트스토밍 결과:  http://www.msaez.io/#/storming/mD3qVoL8dKTd723pyildzLwnvQq2/e90de0f65fb6a78f77f6412a03d85d24
@@ -57,13 +59,11 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 
 
 
-
 ### 부적격 Event 탈락
 
 ![image](https://user-images.githubusercontent.com/36217195/123536406-15107180-d765-11eb-8bf1-bd3f1a18f9d1.png)
 
 - 중복되거나 잘못된 도메인 이벤트들을 걸러내는 작업을 수행함
-- 현업이 사용하는 용어를 그대로 사용(Ubiquitous Language)
 
 
 ### Actor, Command 부착
@@ -71,22 +71,19 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 ![image](https://user-images.githubusercontent.com/36217195/123536612-5a816e80-d766-11eb-9c4a-4bacd895a146.png)
 
 
-
-
 ### Aggregate 로 묶기
 
 ![image](https://user-images.githubusercontent.com/36217195/123536708-eeebd100-d766-11eb-9078-926f85142462.png)
 
 
-
 ### Bounded Context로 묶기
-
 ![image](https://user-images.githubusercontent.com/36217195/123536851-9e28a800-d767-11eb-8c6f-c02af09d575d.png)
 
 
-
-### Policy 부착/이동 및 Context Mapping (괄호는 수행주체)
-
+### Policy 부착/이동 및 Context Mapping 
+- 예약은 사용자가 티켓을 예약/취소하고 이력을 관리함
+- 티켓은 관리자가 티켓을 등록하고, 사용자 예약에 따른 티켓의 상태를 관리함
+- 가격은 정책에 따른 할인을 적용하거나 취소함
 ![image](https://user-images.githubusercontent.com/36217195/123537225-4d19b380-d769-11eb-9dde-41bfa940ca4e.png)
 
 
@@ -99,316 +96,274 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 
 ![image](https://user-images.githubusercontent.com/36217195/123537839-90295600-d76c-11eb-8a61-f1c1d26dd95e.png)
 
+1. 관리자는 티켓을 등록한다. (OK)
+2. 티켓이 등록되면, 티켓의 기본 가격이 할당되고 정책에 따라 할인가격이 적용된다. (OK)
 
 ![image](https://user-images.githubusercontent.com/36217195/123537855-a59e8000-d76c-11eb-9c0a-a1c78a5e13bd.png)
 
+3. 사용자는 티켓을 예약한다. (OK)
+4. 티켓의 상태가 '예약가능'이고, 만료일이 경과하지 않았을 때 예약 가능하고, 티켓의 상태는 '예약됨'으로 변경된다. (OK)
+5. 사용자 등급이 'VIP'일때는 추가 할인 혜택이 적용된다. (OK)
 
 ![image](https://user-images.githubusercontent.com/36217195/123537887-d383c480-d76c-11eb-9342-9055172240cd.png)
 
+6. 사용자는 티켓 예약을 취소할 수 있다.(OK)
 
 
 ![image](https://user-images.githubusercontent.com/36217195/123537943-20679b00-d76d-11eb-92fb-4dee049377c7.png)
 
+7. 관리자와 사용자는 티켓 정보, 사용자 예약현황, 가격을 조회할 수 있다. (OK)
 
 
 ### 비기능 요구사항에 대한 검증
 
 ![image](https://user-images.githubusercontent.com/36217195/123538161-62451100-d76e-11eb-8c71-167696c19d6a.png)
+```
+1.트랜잭션
+  - 티켓 예약 전에 티켓의 상태가 '예약가능'이고, 만료일이 경과하지 않았는지를 반드시 확인한다. -> Synch 호출(OK)
+  - 사용자가 예약을 취소하면 티켓의 상태가 '예약가능'으로 변경되고, 가격도 사용자 등급에 따라 적용된 추가 할인 정책이 원상복구 되어야 한다.  --> SAGA, 보상 트랜잭션 (OK)
 
+2. 장애격리
+  - 가격정책(pricing) 서비스가 수행되지 않더라도 365일 24시간 티켓예약을 취소할 수 있어야 한다. --> Asynch(event-driven), Eventual Consistency (OK)
+  - 티켓관리(ticket) 서비스가 과중되면, 예약(reservation)을 잠시 후에 하도록 유도한다. --> Circuit breaker, fallback (OK)
 
-
+3. 성능
+  - 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시 성능을 고려하여 별도의 view로 구성한다. --> CQRS (OK)
+```
 ## 헥사고날 아키텍처 다이어그램 도출
 
 ![image](https://user-images.githubusercontent.com/36217195/123538459-febbe300-d76f-11eb-9cf5-ca71034d0bde.png)
 
+- Chris Richardson, MSA Patterns 참고하여 Inbound adaptor와 Outbound adaptor를 구분함
+- 호출관계에서 PubSub 과 Req/Resp 를 구분함
+- reservation의 경우 Polyglot 검증을 위해 Hsql로 셜계
 
 
 # 구현
 
 분석/설계 단계에서 도출된 헥사고날 아키텍처에 따라, 구현한 각 서비스의 실행방법은 아래와 같다.
-(포트넘버 : 8081 ~ 8085, 8088)
+(포트넘버 : 8081 ~ 8084, 8088)
+```shell
+cd reservation
+mvn spring-boot:run  
 
-    cd rent
-    mvn spring-boot:run  
+cd ticket
+mvn spring-boot:run
 
-    cd bike
-    mvn spring-boot:run
+cd price
+mvn spring-boot:run 
 
-    cd billing
-    mvn spring-boot:run 
-
-    cd userDeposit
-    mvn spring-boot:run  
-
-    cd rentAndBillingView
-    mvn spring-boot:run
+cd view
+mvn spring-boot:run  
     
-    cd gateway
-    mvn spring-boot:run
-    
+cd gateway
+mvn spring-boot:run
+```
+
 ## Gateway 적용
 API GateWay를 통하여 마이크로 서비스들의 집입점을 통일할 수 있다. 다음과 같이 Gateay를 적용하였다.
-    
-	server:
-	port: 8088
-	
-	---
-	
-	spring:
-	profiles: default
-	cloud:
-		gateway:
-		routes:
-			- id: rent
-			uri: http://localhost:8081
-			predicates:
-				- Path=/rents/** 
-			- id: bike
-			uri: http://localhost:8082
-			predicates:
-				- Path=/bikes/** 
-			- id: billing
-			uri: http://localhost:8083
-			predicates:
-				- Path=/billings/** 
-			- id: userDeposit
-			uri: http://localhost:8084
-			predicates:
-				- Path=/userDeposits/** 
-			- id: rentAndBillingView
-			uri: http://localhost:8085
-			predicates:
-				- Path=/rentAndBillingView/**
+ ```yaml  
+server:
+  port: 8088
 
-		globalcors:
-			corsConfigurations:
-			'[/**]':
-				allowedOrigins:
-				- "*"
-				allowedMethods:
-				- "*"
-				allowedHeaders:
-				- "*"
-				allowCredentials: true
-	
-	
-	---
-	
-	spring:
-	profiles: docker
-	cloud:
-		gateway:
-		routes:
-			- id: rent
-			uri: http://rent:8080
-			predicates:
-				- Path=/rents/** 
-			- id: bike
-			uri: http://bike:8080
-			predicates:
-				- Path=/bikes/** 
-			- id: billing
-			uri: http://billing:8080
-			predicates:
-				- Path=/billings/** 
-			- id: userDeposit
-			uri: http://userDeposit:8080
-			predicates:
-				- Path=/userDeposits/** 
-			- id: rentAndBillingView
-			uri: http://rentAndBillingView:8080
-			predicates:
-				- Path=/remtAmdBillingViews/**
+---
 
-		globalcors:
-			corsConfigurations:
-			'[/**]':
-				allowedOrigins:
-				- "*"
-				allowedMethods:
-				- "*"
-				allowedHeaders:
-				- "*"
-				allowCredentials: true
-	
-	server:
-	port: 8080
-    
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: reservation
+          uri: http://localhost:8081
+          predicates:
+            - Path=/reservations/** 
+        - id: ticket
+          uri: http://localhost:8082
+          predicates:
+            - Path=/tickets/** 
+        - id: price
+          uri: http://localhost:8083
+          predicates:
+            - Path=/prices/** 
+        - id: view
+          uri: http://localhost:8084
+          predicates:
+            - Path= /views/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: reservation
+          uri: http://reservation:8080
+          predicates:
+            - Path=/reservations/** 
+        - id: ticket
+          uri: http://ticket:8080
+          predicates:
+            - Path=/tickets/** 
+        - id: price
+          uri: http://price:8080
+          predicates:
+            - Path=/prices/** 
+        - id: view
+          uri: http://view:8080
+          predicates:
+            - Path= /views/**
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
+ ```   
     
     
     
     
 ## DDD 적용
-MSAEZ.io를 통하여 도출된 Aggregate는 Entity로 선언하여 PRE/POST PERSIST/UPDATE/DELETE 반영하였으며, Repository Pattern을 적용하여 ACID를 구현하였다.
+MSAEZ.io를 통하여 도출된 Aggregate는 Entity로 선언하였고, Repository Pattern을 적용하기 위해 Spring Data REST의 RestRepository를 적용하였다. 
 
-### Rent 서비스의 Rent.java
+### ticket 서비스의 ticket.java
+```java
+package ticket;
 
-	package gbike;
+import java.util.Date;
 
-	import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
+import javax.persistence.Table;
 
-	import org.springframework.beans.BeanUtils;
-	import gbike.external.BikeService;
+import org.springframework.beans.BeanUtils;
 
-	import java.util.Date;
+@Entity
+@Table(name = "Ticket_table")
+public class Ticket {
+    @Id
+    private Long ticketId;
+    private String status; // 예약가능, 예약됨, 만료됨
+    private Date starttime;
+    private Date endtime;
 
-	@Entity
-	@Table(name = "Rent_table")
-	public class Rent {
+    @PostPersist
+    public void onPostPersist() {
+        Registered registered = new Registered();
+        BeanUtils.copyProperties(this, registered);
+        registered.publishAfterCommit();
+    }
 
-	    @Id
-	    @GeneratedValue(strategy = GenerationType.AUTO)
-	    private Long rentid;
-	    private Long userid;
-	    private Long bikeid;
-	    private String status;
-	    private Date starttime;
-	    private Date endtime;
-	    private String endlocation;
+    @PostUpdate
+    public void onPostUpdate() {
+        // 티켓의 상태가 변경되었을 때, StatusUpdated 이벤트 Pub
+        StatusUpdated statusUpdated = new StatusUpdated();
+        BeanUtils.copyProperties(this, statusUpdated);
+        statusUpdated.publishAfterCommit();
+    }
 
-	    private static final String STATUS_RENTED = "rented";
-	    private static final String STATUS_RETURNED = "returned";
+    public Long getTicketId() {
+        return ticketId;
+    }
 
-	    @PrePersist
-	    public void onPrePersist() throws Exception {
-		//bike가 사용가능 상태인지 확인한다.
-		boolean result = RentApplication.applicationContext.getBean(gbike.external.BikeService.class)
-			.chkAndUpdateStatus(this.getBikeid());
-		System.out.println("bike.chkAndUpdateStatus --------  " + result);
-		if (result) {
-		    //bike가 사용가능 상태이므로, rent에 저장할 값을 set 한다. 
-		    this.starttime = new Date(System.currentTimeMillis());
-		    this.status = STATUS_RENTED;
-		    System.out.println("onPrePersist .... ");
-		} else {
-		    throw new Exception(" 자전거는 대여할 수 없는 상태입니다. " + this.getBikeid());
-		}
-	    }
+    public void setTicketId(Long ticketId) {
+        this.ticketId = ticketId;
+    }
 
-	    @PostPersist
-	    public void onPostPersist() {
-		//Rent를 저장했으므로, Rented 이벤트를 pub 한다. 
-		System.out.println("onPostPersist ....  rentid :: " + this.rentid);
-		Rented rented = new Rented();
-		BeanUtils.copyProperties(this, rented);
-		rented.publishAfterCommit();
-	    }
+    public String getStatus() {
+        return status;
+    }
 
-	    @PreUpdate
-	    public void onPreUpdate() {
-		//Returned로 업데이트 할 때 저장할 값을 set 한다. 
-		System.out.println("onPreUpdate .... ");
-		this.endtime = new Date(System.currentTimeMillis());
-		this.status = STATUS_RETURNED;
-	    }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	    @PostUpdate
-	    public void onPostUpdate() {
-		//Rent를 returned 상태로 저장했으므로, Returned 이벤트를 pub 한다. 
-		System.out.println("onPostUpdate .... ");
-		Returned returned = new Returned();
-		BeanUtils.copyProperties(this, returned);
-		returned.publishAfterCommit();
-	    }
+    public Date getStarttime() {
+        return starttime;
+    }
 
-	    public Long getRentid() {
-		return rentid;
-	    }
+    public void setStarttime(Date starttime) {
+        this.starttime = starttime;
+    }
 
-	    public void setRentid(Long rentid) {
-		this.rentid = rentid;
-	    }
+    public Date getEndtime() {
+        return endtime;
+    }
 
-	    public String getStatus() {
-		return status;
-	    }
+    public void setEndtime(Date endtime) {
+        this.endtime = endtime;
+    }
 
-	    public void setStatus(String status) {
-		this.status = status;
-	    }
-
-	    public Date getStarttime() {
-		return starttime;
-	    }
-
-	    public void setStarttime(Date starttime) {
-		this.starttime = starttime;
-	    }
-
-	    public Date getEndtime() {
-		return endtime;
-	    }
-
-	    public void setEndtime(Date endtime) {
-		this.endtime = endtime;
-	    }
-
-	    public String getEndlocation() {
-		return endlocation;
-	    }
-
-	    public void setEndlocation(String endlocation) {
-		this.endlocation = endlocation;
-	    }
-
-	    public Long getUserid() {
-		return userid;
-	    }
-
-	    public void setUserid(Long userid) {
-		this.userid = userid;
-	    }
-
-	    public Long getBikeid() {
-		return bikeid;
-	    }
-
-	    public void setBikeid(Long bikeid) {
-		this.bikeid = bikeid;
-	    }
+}
+```
 
 
-	}
+### ticket 서비스의 PolicyHandler.java
+```java
+package ticket;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.stereotype.Service;
 
-### Bike 서비스의 PolicyHandler.java
+import ticket.config.kafka.KafkaProcessor;
 
-	package gbike;
+@Service
+public class PolicyHandler {
+    @Autowired
+    TicketRepository ticketRepository;
 
-	import gbike.config.kafka.KafkaProcessor;
-	import com.fasterxml.jackson.databind.DeserializationFeature;
-	import com.fasterxml.jackson.databind.ObjectMapper;
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.cloud.stream.annotation.StreamListener;
-	import org.springframework.messaging.handler.annotation.Payload;
-	import org.springframework.stereotype.Service;
+    @StreamListener(KafkaProcessor.INPUT)
+    public void wheneverCancelled_Cancel(@Payload Cancelled cancelled) {
 
-	@Service
-	public class PolicyHandler{
-		@Autowired BikeRepository bikeRepository;
+        if (cancelled.validate()) {
+            //예약을 취소한 경우, 티켓의 상태를 '예약가능'으로 변경
+            Ticket ticket = ticketRepository.findByTicketId(Long.valueOf(cancelled.getTicketId()));
+            ticket.setStatus("예약가능");
+            ticketRepository.save(ticket);
+        }
 
-		@StreamListener(KafkaProcessor.INPUT)
-		public void wheneverReturned_UpdateStatusAndLoc(@Payload Returned returned){
+    }
 
-			if(returned.isMe()){
-				
-				Bike bike = bikeRepository.findByBikeid(Long.valueOf(returned.getBikeid()));
-				
-				//bike.setStatus(returned.getStatus());
-				bike.setStatus("사용가능");
-				bike.setLocation(returned.getEndlocation());
-				
-				bikeRepository.save(bike);
-			}
-				
-		}
+}
+```
 
-		@StreamListener(KafkaProcessor.INPUT)
-		public void whatever(@Payload String eventString){}
+### ticket 서비스의 TicketRepository.java
+```java
+package ticket;
 
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-	}
+@RepositoryRestResource(collectionResourceRel="tickets", path="tickets")
+public interface TicketRepository extends PagingAndSortingRepository<Ticket, Long>{
 
+    Ticket findByTicketId(Long ticketId);
+
+}
+```
 
 
 ## 시나리오 검증

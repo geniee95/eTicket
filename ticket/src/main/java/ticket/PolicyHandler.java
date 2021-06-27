@@ -8,26 +8,20 @@ import org.springframework.stereotype.Service;
 import ticket.config.kafka.KafkaProcessor;
 
 @Service
-public class PolicyHandler{
-    @Autowired 
+public class PolicyHandler {
+    @Autowired
     TicketRepository ticketRepository;
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverCancelled_Cancel(@Payload Cancelled cancelled){
-        // Sample Logic //
-        
+    public void wheneverCancelled_Cancel(@Payload Cancelled cancelled) {
 
-        if(cancelled.validate()) {
-
-            System.out.println("\n\n##### listener Cancel : " + cancelled.toJson() + "\n\n");
-            
-            // 티켓 예약 취소
+        if (cancelled.validate()) {
+            //예약을 취소한 경우, 티켓의 상태를 '예약가능'으로 변경
             Ticket ticket = ticketRepository.findByTicketId(Long.valueOf(cancelled.getTicketId()));
             ticket.setStatus("예약가능");
             ticketRepository.save(ticket);
         }
-        
-    }
 
+    }
 
 }

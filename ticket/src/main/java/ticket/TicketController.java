@@ -59,9 +59,6 @@ public boolean checkAndBook(HttpServletRequest request, HttpServletResponse resp
         return result;     
         }
 
-
-
-        
         private boolean isStringEmpty(String str) {
                 return str == null || str.isEmpty();
         }
