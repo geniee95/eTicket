@@ -86,6 +86,7 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 
 ### Policy 부착/이동 및 Context Mapping (괄호는 수행주체)
 
+![image](https://user-images.githubusercontent.com/36217195/123537225-4d19b380-d769-11eb-9dde-41bfa940ca4e.png)
 
 
 ### 완성된 모형
