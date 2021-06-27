@@ -397,6 +397,11 @@ http GET http://localhost:8088/tickets
 ###v기본 가격할당 및 정책에 따른 할인가격 적용###
 http GET http://localhost:8088/prices
 ```
+![image](https://user-images.githubusercontent.com/36217195/123546622-553d1780-d798-11eb-8832-f855b7c9e90d.png)
+![image](https://user-images.githubusercontent.com/36217195/123546655-7dc51180-d798-11eb-98b2-47fb016a5722.png)
+
+
+```
 
 ### [예약 및 사용자 등급별 할인가격 적용]
 3. 사용자는 티켓을 예약한다. 
