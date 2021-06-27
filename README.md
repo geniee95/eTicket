@@ -556,18 +556,22 @@ kubectl create -f ./kubernetes/service.yaml -n eticket
 ### application.yml 파일에 ${api.url.bikeservice} 설정
 
 * reservation application.yaml 설정
+
 ![image](https://user-images.githubusercontent.com/36217195/123554634-dd80e400-d7bb-11eb-8beb-b0384dde29c4.png)
 
 
 * FeignClient 호출부분 
+
 ![image](https://user-images.githubusercontent.com/36217195/123554643-e2de2e80-d7bb-11eb-8a72-1767fc2349f4.png)
 
 
 * reservation deploy.yaml 에 env 설정
+
 ![image](https://user-images.githubusercontent.com/36217195/123554648-ea053c80-d7bb-11eb-80e5-7eac086d26f4.png)
 
 
 * configmap 생성 및 조회
+
 ```shell
 kubectl create configmap ticketurl --from-literal=url=http://ticket:8080 -n eticket
 kubectl get configmap ticketurl -o yaml -n eticket
