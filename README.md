@@ -118,6 +118,7 @@ i. 사용자와 관리자가 티켓 정보, 예약현황, 가격정보 조회시
 
 ## 헥사고날 아키텍처 다이어그램 도출
 
+![image](https://user-images.githubusercontent.com/36217195/123538459-febbe300-d76f-11eb-9cf5-ca71034d0bde.png)
 
 
 
