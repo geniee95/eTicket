@@ -584,6 +584,8 @@ kubectl get configmap ticketurl -o yaml -n eticket
 kubectl exec -it pod/reservation-65c474dbb6-2jx2d -n eticket -- /bin/sh
 $ env
 ```
+![image](https://user-images.githubusercontent.com/36217195/123676733-4a10e700-d87f-11eb-9830-a2bfcdb5f628.png)
+
 
 
 
