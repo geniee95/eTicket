@@ -557,17 +557,17 @@ kubectl create -f ./kubernetes/service.yaml -n eticket
 
 * reservation application.yaml 설정
 
-![image](https://user-images.githubusercontent.com/36217195/123554634-dd80e400-d7bb-11eb-8beb-b0384dde29c4.png)
+![image](https://user-images.githubusercontent.com/36217195/123677110-b2f85f00-d87f-11eb-85f7-1783fc22771d.png)
 
 
 * FeignClient 호출부분 
 
-![image](https://user-images.githubusercontent.com/36217195/123554643-e2de2e80-d7bb-11eb-8a72-1767fc2349f4.png)
+![image](https://user-images.githubusercontent.com/36217195/123677247-d7543b80-d87f-11eb-984e-48f1a5a4709e.png)
 
 
 * reservation deploy.yaml 에 env 설정
 
-![image](https://user-images.githubusercontent.com/36217195/123554648-ea053c80-d7bb-11eb-80e5-7eac086d26f4.png)
+![image](https://user-images.githubusercontent.com/36217195/123677373-feab0880-d87f-11eb-997f-476e404076df.png)
 
 
 * configmap 생성 및 조회
