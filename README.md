@@ -576,14 +576,15 @@ kubectl create -f ./kubernetes/service.yaml -n eticket
 kubectl create configmap ticketurl --from-literal=url=http://ticket:8080 -n eticket
 kubectl get configmap ticketurl -o yaml -n eticket
 ```
-[TODO 그립 확인할 것!!]
-![image](https://user-images.githubusercontent.com/36217195/123554691-22a51600-d7bc-11eb-9711-e2fe475fd2ce.png)
+![image](https://user-images.githubusercontent.com/36217195/123676230-a1628780-d87e-11eb-9928-e79b6b104554.png)
 
 
 * reservation pod에서 환경변수 확인
+```
+kubectl exec -it pod/reservation-65c474dbb6-2jx2d -n eticket -- /bin/sh
+$ env
+```
 
-
-* configmap 삭제 후 에러 확인
 
 
 # 동기 호출/서킷 브레이커/장애격리
