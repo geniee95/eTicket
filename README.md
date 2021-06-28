@@ -606,7 +606,7 @@ $ env
 	hystrix:
 	  command:
 		default:
-		  execution.isolation.thread.timeoutInMilliseconds: 600
+		  execution.isolation.thread.timeoutInMilliseconds: 610
 ```
 
 - 부하에 대한 지연시간 발생코드 TicketController.java 지연 적용
@@ -615,22 +615,23 @@ $ env
 ![circuit](https://user-images.githubusercontent.com/82795748/121125003-c9069700-c860-11eb-9a4f-1ffb5e20a550.jpg)
 
 ### 부하 테스트 siege Pod 설치
-	kubectl apply -f - <<EOF
-	apiVersion: v1
-	kind: Pod
-	metadata:
-	  name: siege
-	spec:
-	  containers:
-	    - name: siege
-	    image: apexacme/siege-nginx
-	EOF
-
+```
+kubectl apply -f -<<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: siege
+spec:
+  containers:
+    - name: siege
+      image: apexacme/siege-nginx
+EOF
+```
 
 - 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 100명, 60초 동안 실시
 ```shell
-kubectl exec -it pod/siege -c siege -n edu -- /bin/bash
-$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketid": "1", "..........}'
+kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
+$ siege -c50 -t180S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId": "1", "userId": “A”, “userGrade”:”Silver”}’
 ```
 
 - 결과
