@@ -544,8 +544,8 @@ kubectl create -f ./kubernetes/service.yaml -n eticket
 ```	
 
 ### Deploy 완료
+![image](https://user-images.githubusercontent.com/36217195/123649763-fa252680-d864-11eb-9e26-61d8c8843eee.png)
 
-[TODO] 이미지 캡쳐
 
 
 
