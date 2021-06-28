@@ -553,17 +553,15 @@ kubectl create -f ./kubernetes/service.yaml -n eticket
 * 시스템별로 변경 가능성이 있는 설정들을 ConfigMap을 사용하여 관리한다.
 	* reservation 서비스에서 호출하는 ticket 서비스 url을 ConfigMap을 사용하여 구현하였다. 
 	
-### application.yml 파일에 ${api.url.bikeservice} 설정
-
-* reservation application.yaml 설정
-
-![image](https://user-images.githubusercontent.com/36217195/123554634-dd80e400-d7bb-11eb-8beb-b0384dde29c4.png)
-
+### application.yml 파일에 ${api.url.ticketservice} 설정
 
 * FeignClient 호출부분 
 
 ![image](https://user-images.githubusercontent.com/36217195/123554643-e2de2e80-d7bb-11eb-8a72-1767fc2349f4.png)
 
+* reservation application.yaml 설정
+
+![image](https://user-images.githubusercontent.com/36217195/123554634-dd80e400-d7bb-11eb-8beb-b0384dde29c4.png)
 
 * reservation deploy.yaml 에 env 설정
 
