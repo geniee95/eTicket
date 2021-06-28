@@ -580,8 +580,36 @@ kubectl get configmap ticketurl -o yaml -n eticket
 ![image](https://user-images.githubusercontent.com/36217195/123554691-22a51600-d7bc-11eb-9711-e2fe475fd2ce.png)
 
 
+* reservation pod에서 환경변수 확인
 
-## Autoscale (HPA)
+
+* configmap 삭제 후 에러 확인
+
+
+# 동기 호출/서킷 브레이커/장애격리
+
+- 서킷 브레이킹 프레임워크의 선택 : Spring FeignClient + Hystrix 옵션을 사용하여 구현함
+
+- Hystrix를 설정 : 요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록(요청을 빠르게 실패처리, 차단) 설정
+
+- 동기 호출 주체인 reservation 서비스에 Hystrix 설정
+
+- reservation/src/main/resources/application.yml 파일
+
+```
+	feign:
+	  hystrix:
+		enabled: true
+	hystrix:
+	  command:
+		default:
+		  execution.isolation.thread.timeoutInMilliseconds: 600
+```
+
+- 부하에 대한 지연시간 발생코드 TicketController.java 지연 적용
+(400 ms에서 증감 220 안에서 랜덤하게 부하 발생)
+
+![circuit](https://user-images.githubusercontent.com/82795748/121125003-c9069700-c860-11eb-9a4f-1ffb5e20a550.jpg)
 
 ### 부하 테스트 siege Pod 설치
 	kubectl apply -f - <<EOF
@@ -595,6 +623,22 @@ kubectl get configmap ticketurl -o yaml -n eticket
 	    image: apexacme/siege-nginx
 	EOF
 
+
+- 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 100명, 60초 동안 실시
+```shell
+kubectl exec -it pod/siege -c siege -n edu -- /bin/bash
+$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketid": "1", "..........}'
+```
+
+- 결과
+
+![image](https://user-images.githubusercontent.com/82796103/121124344-b9d31980-c85f-11eb-9d9b-2778f3fcb06a.png)
+
+![image](https://user-images.githubusercontent.com/82796103/121125220-2995d400-c861-11eb-96ef-01f771097e2e.png)
+
+
+## Autoscale Out (HPA)
+앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
 ### Auto Scale-Out 설정
 deployment.yml 파일 수정
 
@@ -605,22 +649,63 @@ deployment.yml 파일 수정
             cpu: 200m
 	    
 Auto Scale 설정
+replica를 동적으로 늘려주도록 HPA를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica를 5개까지 늘려준다.
+	kubectl autoscale deployment bike --cpu-percent=15 --min=1 --max=5 -n eticket
 
-	kubectl autoscale deployment bike --cpu-percent=20 --min=1 --max=3 -n gbike
+* CB에서 했던 방식대로 워크로드를 걸어준다.
+- 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 100명, 60초 동안 실시
+```shell
+kubectl exec -it pod/siege -c siege -n edu -- /bin/bash
+$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketid": "1", "..........}'
+```
 
-### Auto Scale Out 발동 확인
+* 오토스케일 확인을 위해 모니터링을 걸어둔다.
+watch kubectl get all -n eticket
 
-- 부하 시작 (siege) : 동시접속 100명, 120초 동안 
-	
-	siege -c100 -t120S -v http://20.194.44.70:8080/bikes
+kubectl get all -n eticket
+[TODO] 캡쳐
 
-![autoscale1](https://user-images.githubusercontent.com/82795748/121107122-55559180-c842-11eb-8542-bbfef1463584.jpg)
+
 
 - Scale out 확인
 
 ![autoscale2](https://user-images.githubusercontent.com/82795748/121107303-a4032b80-c842-11eb-958c-a64e98bda3ce.jpg)
 
 ![autoscale3](https://user-images.githubusercontent.com/82795748/121107154-643c4400-c842-11eb-9033-69c1a3114eb2.jpg)
+
+
+
+
+## Zero-downtime deploy (readiness probe)
+
+- readiness 옵션 제거 후 배포 - 신규 Pod 생성 시 downtime 발생
+readiness 설정 제거한 yml 파일(deployment_rm_readiness.yml)로 app deploy 다시 생성 후, siege 부하 테스트 실행해둔 뒤 재배포 진행
+
+* seige는 동시사용자 1명으로 길게 실행...
+# app 새버전으로의 배포 시작 (두 개 버전으로 버전 바꿔가면서 테스트)
+kubectl set image deployment app app=eunmi.azurecr.io/app:latest -n edu
+kubectl set image deployment app app=eunmi.azurecr.io/app:v1 -n edu
+
+
+![image](https://user-images.githubusercontent.com/82795726/121106857-d06a7800-c841-11eb-85cd-d7ad08ff62db.png)
+
+- readiness 옵션 추가하여 배포
+
+![image](https://user-images.githubusercontent.com/82795726/121106445-fc392e00-c840-11eb-9b8c-b413ef06b95e.png)
+
+![image](https://user-images.githubusercontent.com/82795726/121106524-225ece00-c841-11eb-9953-2febeab82108.png)
+
+- Pod Describe에 Readiness 설정 확인  (?????)
+
+![image](https://user-images.githubusercontent.com/82795726/121110068-a61bb900-c847-11eb-9229-63701496846a.png)
+
+- 기존 버전과 새 버전의  pod 공존  (?????)
+
+![image](https://user-images.githubusercontent.com/82795726/121109942-6e147600-c847-11eb-9dae-9dfce13e8c62.png)
+
+
+
+
 
 ## Self-healing (Liveness Probe)
 
@@ -659,57 +744,5 @@ vi deployment.yml
 ![image](https://user-images.githubusercontent.com/84724396/121130881-fa379500-c869-11eb-9921-b24701660a72.png)
 
 
-# Circuit Breaker
-
-- 서킷 브레이킹 프레임워크의 선택 : Spring FeignClient + Hystrix 옵션을 사용하여 구현함
-
-- Hystrix를 설정 : 요청처리 쓰레드에서 처리시간이 1200 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록(요청을 빠르게 실패처리, 차단) 설정
-
-- 동기 호출 주체인 Rent 서비스에 Hystrix 설정
-
-- rent/src/main/resources/application.yml 파일
-
-```
-	feign:
-	  hystrix:
-		enabled: true
-	hystrix:
-	  command:
-		default:
-		  execution.isolation.thread.timeoutInMilliseconds: 1200
-```
-
-- 부하에 대한 지연시간 발생코드 BikeController.java 지연 적용
-
-![circuit](https://user-images.githubusercontent.com/82795748/121125003-c9069700-c860-11eb-9a4f-1ffb5e20a550.jpg)
-
-- 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 5명, 10초 동안 실시
-
-	siege -c5 -t10S -r10 -v --content-type "application/json" 'http://20.194.44.70:8080/rents POST {"bikeid": "1", "userid": "1"}'
-
-- 결과
-
-![image](https://user-images.githubusercontent.com/82796103/121124344-b9d31980-c85f-11eb-9d9b-2778f3fcb06a.png)
-
-![image](https://user-images.githubusercontent.com/82796103/121125220-2995d400-c861-11eb-96ef-01f771097e2e.png)
 
 
-## Zero-downtime deploy (readiness probe)
-
-- readiness 옵션 제거 후 배포 - 신규 Pod 생성 시 downtime 발생
-
-![image](https://user-images.githubusercontent.com/82795726/121106857-d06a7800-c841-11eb-85cd-d7ad08ff62db.png)
-
-- readiness 옵션 추가하여 배포
-
-![image](https://user-images.githubusercontent.com/82795726/121106445-fc392e00-c840-11eb-9b8c-b413ef06b95e.png)
-
-![image](https://user-images.githubusercontent.com/82795726/121106524-225ece00-c841-11eb-9953-2febeab82108.png)
-
-- Pod Describe에 Readiness 설정 확인
-
-![image](https://user-images.githubusercontent.com/82795726/121110068-a61bb900-c847-11eb-9229-63701496846a.png)
-
-- 기존 버전과 새 버전의  pod 공존
-
-![image](https://user-images.githubusercontent.com/82795726/121109942-6e147600-c847-11eb-9dae-9dfce13e8c62.png)
