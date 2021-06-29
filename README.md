@@ -714,45 +714,29 @@ kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v5 -n eticket
 ![image](https://user-images.githubusercontent.com/36217195/123739455-a86eb180-d8e1-11eb-9fdf-e9b894d6aa51.png)
 
 
+[TODO siege 100% 캡쳐]
 
 
 
 
 ## Self-healing (Liveness Probe)
 
-- userdeposit 서비스 정상 확인
+- deployment_test_liveness.yml 에 Liveness Probe 옵션을 아래와 같이 수정하여 적용
 
-![liveness1](https://user-images.githubusercontent.com/84724396/121038124-fdd80700-c7ea-11eb-9063-ce9360b36278.PNG)
-
-
-- deployment.yml 에 Liveness Probe 옵션 추가
-```
-cd ~/gbike/userDeposit
-vi deployment.yml
-
-(아래 설정 변경)
-          livenessProbe:
-            httpGet:
-              path: '/actuator/health'
-              port: 8081
-            initialDelaySeconds: 3
-            periodSeconds: 5
-```
-
-![liveness43](https://user-images.githubusercontent.com/84724396/121042427-a471d700-c7ee-11eb-9140-3e59ac801fed.PNG)
+![image](https://user-images.githubusercontent.com/36217195/123746494-aeb65b00-d8ec-11eb-9258-2573c4674761.png)
 
 
 
-- gbike pod에 liveness가 적용된 부분 확인
-
-  kubectl describe deploy userdeposit -n gbike
-
-![liveness42](https://user-images.githubusercontent.com/84724396/121044305-65448580-c7f0-11eb-9d1a-29b4b0118904.PNG)
+kubectl apply -f ./kubernetes/deployment.yml -n eticket
+kubectl apply -f ./kubernetes/deployment_test_liveness.yml -n eticket
 
 
-- userdeposit 서비스의 liveness가 발동되어 2번 retry 시도 한 부분 확인
 
-![image](https://user-images.githubusercontent.com/84724396/121130881-fa379500-c869-11eb-9921-b24701660a72.png)
+- ticket 서비스의 liveness가 발동되어 약 14분간 6번의 retry 시도 한 부분 확인
+
+
+![image](https://user-images.githubusercontent.com/36217195/123746750-06ed5d00-d8ed-11eb-9c47-c2d9e3b88790.png)
+
 
 
 
