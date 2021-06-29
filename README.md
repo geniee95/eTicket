@@ -696,18 +696,24 @@ http POST http://52.231.95.4:8080/tickets ticketId=1 status=예약가능 startti
 
 #siege 테스트 
 kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
-$ siege -c1 -t180S -r3 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
+siege -c1 -t180S -r1 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
 
 # app 새버전으로의 배포 시작 (두 개 버전으로 버전 바꿔가면서 테스트)
 kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v4 -n eticket
 kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v5 -n eticket
 ```
 
+* readiness 미적용 경우
+![image](https://user-images.githubusercontent.com/36217195/123738284-76f4e680-d8df-11eb-8d72-068fc331d793.png)
 
-ㄱㄷ
+
+
 * readiness 적용한 경우
-ㄱㄷ
-![image](https://user-images.githubusercontent.com/36217195/123734670-b409aa80-d8d8-11eb-8589-6b86d0d445d1.png)
+![image](https://user-images.githubusercontent.com/36217195/123739455-a86eb180-d8e1-11eb-9fdf-e9b894d6aa51.png)
+
+![image](https://user-images.githubusercontent.com/36217195/123736370-f7b1e380-d8db-11eb-9a73-e9e0da5e1550.png)
+![image](https://user-images.githubusercontent.com/36217195/123738275-72303280-d8df-11eb-9232-1aea75d10774.png)
+
 
 
 
