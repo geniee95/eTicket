@@ -557,17 +557,17 @@ kubectl create -f ./kubernetes/service.yaml -n eticket
 
 * reservation application.yaml 설정
 
-![image](https://user-images.githubusercontent.com/36217195/123554634-dd80e400-d7bb-11eb-8beb-b0384dde29c4.png)
+![image](https://user-images.githubusercontent.com/36217195/123677110-b2f85f00-d87f-11eb-85f7-1783fc22771d.png)
 
 
 * FeignClient 호출부분 
 
-![image](https://user-images.githubusercontent.com/36217195/123554643-e2de2e80-d7bb-11eb-8a72-1767fc2349f4.png)
+![image](https://user-images.githubusercontent.com/36217195/123677247-d7543b80-d87f-11eb-984e-48f1a5a4709e.png)
 
 
 * reservation deploy.yaml 에 env 설정
 
-![image](https://user-images.githubusercontent.com/36217195/123554648-ea053c80-d7bb-11eb-80e5-7eac086d26f4.png)
+![image](https://user-images.githubusercontent.com/36217195/123677373-feab0880-d87f-11eb-997f-476e404076df.png)
 
 
 * configmap 생성 및 조회
@@ -576,14 +576,17 @@ kubectl create -f ./kubernetes/service.yaml -n eticket
 kubectl create configmap ticketurl --from-literal=url=http://ticket:8080 -n eticket
 kubectl get configmap ticketurl -o yaml -n eticket
 ```
-[TODO 그립 확인할 것!!]
-![image](https://user-images.githubusercontent.com/36217195/123554691-22a51600-d7bc-11eb-9711-e2fe475fd2ce.png)
+![image](https://user-images.githubusercontent.com/36217195/123676230-a1628780-d87e-11eb-9928-e79b6b104554.png)
 
 
 * reservation pod에서 환경변수 확인
+```
+kubectl exec -it pod/reservation-65c474dbb6-2jx2d -n eticket -- /bin/sh
+$ env
+```
+![image](https://user-images.githubusercontent.com/36217195/123676733-4a10e700-d87f-11eb-9830-a2bfcdb5f628.png)
 
 
-* configmap 삭제 후 에러 확인
 
 
 # 동기 호출/서킷 브레이커/장애격리
@@ -603,42 +606,50 @@ kubectl get configmap ticketurl -o yaml -n eticket
 	hystrix:
 	  command:
 		default:
-		  execution.isolation.thread.timeoutInMilliseconds: 600
+		  execution.isolation.thread.timeoutInMilliseconds: 610
 ```
 
 - 부하에 대한 지연시간 발생코드 TicketController.java 지연 적용
 (400 ms에서 증감 220 안에서 랜덤하게 부하 발생)
 
-![circuit](https://user-images.githubusercontent.com/82795748/121125003-c9069700-c860-11eb-9a4f-1ffb5e20a550.jpg)
+![image](https://user-images.githubusercontent.com/36217195/123723115-af3afb80-d8c4-11eb-80cc-f388f530ac29.png)
+
 
 ### 부하 테스트 siege Pod 설치
-	kubectl apply -f - <<EOF
-	apiVersion: v1
-	kind: Pod
-	metadata:
-	  name: siege
-	spec:
-	  containers:
-	    - name: siege
-	    image: apexacme/siege-nginx
-	EOF
+```
+kubectl apply -f -<<EOF
+apiVersion: v1
+kind: Pod
+metadata:
+  name: siege
+spec:
+  containers:
+    - name: siege
+      image: apexacme/siege-nginx
+EOF
+```
 
-
-- 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 100명, 60초 동안 실시
+- 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 10명, 10초 동안, 10번 반복 실시
 ```shell
-kubectl exec -it pod/siege -c siege -n edu -- /bin/bash
-$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketid": "1", "..........}'
+##초기 데이터 등록
+http POST http://52.231.95.4:8080/tickets ticketId=1 status=예약가능 starttime=2021-07-06 endtime=2021-07-06
+
+kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
+$ siege -c10 -t10S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
 ```
 
 - 결과
 
-![image](https://user-images.githubusercontent.com/82796103/121124344-b9d31980-c85f-11eb-9d9b-2778f3fcb06a.png)
+![image](https://user-images.githubusercontent.com/36217195/123723273-00e38600-d8c5-11eb-95ae-9beabb8b0d47.png)
 
-![image](https://user-images.githubusercontent.com/82796103/121125220-2995d400-c861-11eb-96ef-01f771097e2e.png)
+. . . . . 
+
+![image](https://user-images.githubusercontent.com/36217195/123723317-18bb0a00-d8c5-11eb-9f96-bc9ca7d75e8c.png)
+![image](https://user-images.githubusercontent.com/36217195/123723340-2a041680-d8c5-11eb-8e7e-10dfa06b9dc5.png)
 
 
 ## Autoscale Out (HPA)
-앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
+앞서 서킷브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
 ### Auto Scale-Out 설정
 deployment.yml 파일 수정
 
@@ -650,98 +661,80 @@ deployment.yml 파일 수정
 	    
 Auto Scale 설정
 replica를 동적으로 늘려주도록 HPA를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica를 5개까지 늘려준다.
-	kubectl autoscale deployment bike --cpu-percent=15 --min=1 --max=5 -n eticket
-
+```
+kubectl autoscale deployment ticket --cpu-percent=15 --min=1 --max=5 -n eticket
+```
 * CB에서 했던 방식대로 워크로드를 걸어준다.
 - 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 100명, 60초 동안 실시
 ```shell
-kubectl exec -it pod/siege -c siege -n edu -- /bin/bash
-$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketid": "1", "..........}'
+##초기 데이터 등록
+http POST http://52.231.95.4:8080/tickets ticketId=1 status=예약가능 starttime=2021-07-06 endtime=2021-07-06
+
+kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
+$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
 ```
 
-* 오토스케일 확인을 위해 모니터링을 걸어둔다.
-watch kubectl get all -n eticket
-
-kubectl get all -n eticket
-[TODO] 캡쳐
-
-
-
 - Scale out 확인
+* before
 
-![autoscale2](https://user-images.githubusercontent.com/82795748/121107303-a4032b80-c842-11eb-958c-a64e98bda3ce.jpg)
+![image](https://user-images.githubusercontent.com/36217195/123725745-984ad800-d8c9-11eb-8de9-2e961810461b.png)
 
-![autoscale3](https://user-images.githubusercontent.com/82795748/121107154-643c4400-c842-11eb-9033-69c1a3114eb2.jpg)
+* after
 
+![image](https://user-images.githubusercontent.com/36217195/123726401-dd233e80-d8ca-11eb-8dca-8ecc799ddb98.png)
 
 
 
 ## Zero-downtime deploy (readiness probe)
 
-- readiness 옵션 제거 후 배포 - 신규 Pod 생성 시 downtime 발생
-readiness 설정 제거한 yml 파일(deployment_rm_readiness.yml)로 app deploy 다시 생성 후, siege 부하 테스트 실행해둔 뒤 재배포 진행
+- readiness 설정 제거한 yml 파일(deployment_no_readiness.yml)로 ticket deploy 다시 생성 후, siege 부하 테스트 실행해둔 뒤 재배포 진행
+- 
+```shell
+kubectl create -f ./kubernetes/deployment_no_readiness.yml -n eticket
+#초기데이터 설정
+http POST http://52.231.95.4:8080/tickets ticketId=1 status=예약가능 starttime=2021-07-06 endtime=2021-07-06
 
-* seige는 동시사용자 1명으로 길게 실행...
+#siege 테스트 
+kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
+siege -c1 -t180S -r1 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
+
 # app 새버전으로의 배포 시작 (두 개 버전으로 버전 바꿔가면서 테스트)
-kubectl set image deployment app app=eunmi.azurecr.io/app:latest -n edu
-kubectl set image deployment app app=eunmi.azurecr.io/app:v1 -n edu
+kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v4 -n eticket
+kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v5 -n eticket
+```
+
+* readiness 미적용 경우
+
+![image](https://user-images.githubusercontent.com/36217195/123740310-2da69600-d8e3-11eb-9ddf-3babbd409c66.png)
 
 
-![image](https://user-images.githubusercontent.com/82795726/121106857-d06a7800-c841-11eb-85cd-d7ad08ff62db.png)
 
-- readiness 옵션 추가하여 배포
+* readiness 적용한 경우
 
-![image](https://user-images.githubusercontent.com/82795726/121106445-fc392e00-c840-11eb-9b8c-b413ef06b95e.png)
+![image](https://user-images.githubusercontent.com/36217195/123739455-a86eb180-d8e1-11eb-9fdf-e9b894d6aa51.png)
 
-![image](https://user-images.githubusercontent.com/82795726/121106524-225ece00-c841-11eb-9953-2febeab82108.png)
 
-- Pod Describe에 Readiness 설정 확인  (?????)
-
-![image](https://user-images.githubusercontent.com/82795726/121110068-a61bb900-c847-11eb-9229-63701496846a.png)
-
-- 기존 버전과 새 버전의  pod 공존  (?????)
-
-![image](https://user-images.githubusercontent.com/82795726/121109942-6e147600-c847-11eb-9dae-9dfce13e8c62.png)
-
+[TODO siege 100% 캡쳐]
 
 
 
 
 ## Self-healing (Liveness Probe)
 
-- userdeposit 서비스 정상 확인
+- deployment_test_liveness.yml 에 Liveness Probe 옵션을 아래와 같이 수정하여 적용
 
-![liveness1](https://user-images.githubusercontent.com/84724396/121038124-fdd80700-c7ea-11eb-9063-ce9360b36278.PNG)
+![image](https://user-images.githubusercontent.com/36217195/123746494-aeb65b00-d8ec-11eb-9258-2573c4674761.png)
 
-
-- deployment.yml 에 Liveness Probe 옵션 추가
 ```
-cd ~/gbike/userDeposit
-vi deployment.yml
-
-(아래 설정 변경)
-          livenessProbe:
-            httpGet:
-              path: '/actuator/health'
-              port: 8081
-            initialDelaySeconds: 3
-            periodSeconds: 5
+kubectl apply -f ./kubernetes/deployment.yml -n eticket
+kubectl apply -f ./kubernetes/deployment_test_liveness.yml -n eticket
 ```
 
-![liveness43](https://user-images.githubusercontent.com/84724396/121042427-a471d700-c7ee-11eb-9140-3e59ac801fed.PNG)
+- ticket 서비스의 liveness가 발동되어 약 14분간 6번의 retry 시도 한 부분 확인
 
 
+![image](https://user-images.githubusercontent.com/36217195/123746750-06ed5d00-d8ed-11eb-9c47-c2d9e3b88790.png)
 
-- gbike pod에 liveness가 적용된 부분 확인
-
-  kubectl describe deploy userdeposit -n gbike
-
-![liveness42](https://user-images.githubusercontent.com/84724396/121044305-65448580-c7f0-11eb-9d1a-29b4b0118904.PNG)
-
-
-- userdeposit 서비스의 liveness가 발동되어 2번 retry 시도 한 부분 확인
-
-![image](https://user-images.githubusercontent.com/84724396/121130881-fa379500-c869-11eb-9921-b24701660a72.png)
 
 
 
