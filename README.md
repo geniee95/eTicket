@@ -704,11 +704,13 @@ kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v5 -n eticket
 ```
 
 * readiness 미적용 경우
+
 ![image](https://user-images.githubusercontent.com/36217195/123740310-2da69600-d8e3-11eb-9ddf-3babbd409c66.png)
 
 
 
 * readiness 적용한 경우
+
 ![image](https://user-images.githubusercontent.com/36217195/123739455-a86eb180-d8e1-11eb-9fdf-e9b894d6aa51.png)
 
 ![image](https://user-images.githubusercontent.com/36217195/123736370-f7b1e380-d8db-11eb-9a73-e9e0da5e1550.png)
