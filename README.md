@@ -688,17 +688,17 @@ $ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservatio
 ## Zero-downtime deploy (readiness probe)
 
 - readiness 설정 제거한 yml 파일(deployment_no_readiness.yml)로 ticket deploy 다시 생성 후, siege 부하 테스트 실행해둔 뒤 재배포 진행
+- 
 ```shell
+kubectl create -f ./kubernetes/deployment_no_readiness.yml -n eticket
+
 #siege 테스트 
 kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
 $ siege -c2 -t180S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
-```
 
-
-```
 # app 새버전으로의 배포 시작 (두 개 버전으로 버전 바꿔가면서 테스트)
+kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:vNoReadiness2 -n eticket
 kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:vNoReadiness -n eticket
-kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v3 -n eticket
 ```
 
 ### 새 버전으로 배포되는 중 (구버전, 신버전 공존)
