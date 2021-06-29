@@ -612,7 +612,8 @@ $ env
 - 부하에 대한 지연시간 발생코드 TicketController.java 지연 적용
 (400 ms에서 증감 220 안에서 랜덤하게 부하 발생)
 
-![circuit](https://user-images.githubusercontent.com/82795748/121125003-c9069700-c860-11eb-9a4f-1ffb5e20a550.jpg)
+![image](https://user-images.githubusercontent.com/36217195/123723115-af3afb80-d8c4-11eb-80cc-f388f530ac29.png)
+
 
 ### 부하 테스트 siege Pod 설치
 ```
@@ -628,21 +629,24 @@ spec:
 EOF
 ```
 
-- 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 100명, 60초 동안 실시
+- 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 10명, 10초 동안, 10번 반복 실시
 ```shell
 kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
-$ siege -c50 -t180S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId": "1", "userId": “A”, “userGrade”:”Silver”}’
+$ siege -c10 -t10S -r10 -v --content-type "application/json" 'http://10.0.68.70:8080/reservations POST {"ticketId":"1"}'
 ```
 
 - 결과
 
-![image](https://user-images.githubusercontent.com/82796103/121124344-b9d31980-c85f-11eb-9d9b-2778f3fcb06a.png)
+![image](https://user-images.githubusercontent.com/36217195/123723273-00e38600-d8c5-11eb-95ae-9beabb8b0d47.png)
 
-![image](https://user-images.githubusercontent.com/82796103/121125220-2995d400-c861-11eb-96ef-01f771097e2e.png)
+. . . . . 
+
+![image](https://user-images.githubusercontent.com/36217195/123723317-18bb0a00-d8c5-11eb-9f96-bc9ca7d75e8c.png)
+![image](https://user-images.githubusercontent.com/36217195/123723340-2a041680-d8c5-11eb-8e7e-10dfa06b9dc5.png)
 
 
 ## Autoscale Out (HPA)
-앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
+앞서 서킷브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
 ### Auto Scale-Out 설정
 deployment.yml 파일 수정
 
@@ -654,13 +658,14 @@ deployment.yml 파일 수정
 	    
 Auto Scale 설정
 replica를 동적으로 늘려주도록 HPA를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica를 5개까지 늘려준다.
-	kubectl autoscale deployment bike --cpu-percent=15 --min=1 --max=5 -n eticket
-
+```
+kubectl autoscale deployment ticket --cpu-percent=15 --min=1 --max=5 -n eticket
+```
 * CB에서 했던 방식대로 워크로드를 걸어준다.
 - 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 100명, 60초 동안 실시
 ```shell
-kubectl exec -it pod/siege -c siege -n edu -- /bin/bash
-$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketid": "1", "..........}'
+kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
+$ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://10.0.68.70:8080/reservations POST {"ticketId":"1"}'
 ```
 
 * 오토스케일 확인을 위해 모니터링을 걸어둔다.
