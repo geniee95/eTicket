@@ -670,17 +670,12 @@ $ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://10.0.68.70
 
 - Scale out 확인
 * before
+
 ![image](https://user-images.githubusercontent.com/36217195/123725745-984ad800-d8c9-11eb-8de9-2e961810461b.png)
 
 * after
+
 ![image](https://user-images.githubusercontent.com/36217195/123726401-dd233e80-d8ca-11eb-8dca-8ecc799ddb98.png)
-
-
-
-![autoscale2](https://user-images.githubusercontent.com/82795748/121107303-a4032b80-c842-11eb-958c-a64e98bda3ce.jpg)
-
-![autoscale3](https://user-images.githubusercontent.com/82795748/121107154-643c4400-c842-11eb-9033-69c1a3114eb2.jpg)
-
 
 
 
