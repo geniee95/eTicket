@@ -687,14 +687,21 @@ $ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservatio
 
 ## Zero-downtime deploy (readiness probe)
 
-- readiness 옵션 제거 후 배포 - 신규 Pod 생성 시 downtime 발생
-readiness 설정 제거한 yml 파일(deployment_rm_readiness.yml)로 app deploy 다시 생성 후, siege 부하 테스트 실행해둔 뒤 재배포 진행
+- readiness 설정 제거한 yml 파일(deployment_no_readiness.yml)로 ticket deploy 다시 생성 후, siege 부하 테스트 실행해둔 뒤 재배포 진행
+```shell
+#siege 테스트 
+kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
+$ siege -c2 -t180S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
+```
 
-* seige는 동시사용자 1명으로 길게 실행...
+
+```
 # app 새버전으로의 배포 시작 (두 개 버전으로 버전 바꿔가면서 테스트)
-kubectl set image deployment app app=eunmi.azurecr.io/app:latest -n edu
-kubectl set image deployment app app=eunmi.azurecr.io/app:v1 -n edu
+kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:vNoReadiness -n eticket
+kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v3 -n eticket
+```
 
+### 새 버전으로 배포되는 중 (구버전, 신버전 공존)
 
 ![image](https://user-images.githubusercontent.com/82795726/121106857-d06a7800-c841-11eb-85cd-d7ad08ff62db.png)
 
