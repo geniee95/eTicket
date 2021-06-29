@@ -631,6 +631,9 @@ EOF
 
 - 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 10명, 10초 동안, 10번 반복 실시
 ```shell
+##초기 데이터 등록
+http POST http://52.231.95.4:8080/tickets ticketId=1 status=예약가능 starttime=2021-07-06 endtime=2021-07-06
+
 kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
 $ siege -c10 -t10S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
 ```
@@ -664,6 +667,9 @@ kubectl autoscale deployment ticket --cpu-percent=15 --min=1 --max=5 -n eticket
 * CB에서 했던 방식대로 워크로드를 걸어준다.
 - 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 100명, 60초 동안 실시
 ```shell
+##초기 데이터 등록
+http POST http://52.231.95.4:8080/tickets ticketId=1 status=예약가능 starttime=2021-07-06 endtime=2021-07-06
+
 kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
 $ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
 ```
