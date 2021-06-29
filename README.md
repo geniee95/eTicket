@@ -725,12 +725,10 @@ kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v5 -n eticket
 
 ![image](https://user-images.githubusercontent.com/36217195/123746494-aeb65b00-d8ec-11eb-9258-2573c4674761.png)
 
-
-
+```
 kubectl apply -f ./kubernetes/deployment.yml -n eticket
 kubectl apply -f ./kubernetes/deployment_test_liveness.yml -n eticket
-
-
+```
 
 - ticket 서비스의 liveness가 발동되어 약 14분간 6번의 retry 시도 한 부분 확인
 
