@@ -713,30 +713,6 @@ kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v5 -n eticket
 
 ![image](https://user-images.githubusercontent.com/36217195/123739455-a86eb180-d8e1-11eb-9fdf-e9b894d6aa51.png)
 
-![image](https://user-images.githubusercontent.com/36217195/123736370-f7b1e380-d8db-11eb-9a73-e9e0da5e1550.png)
-![image](https://user-images.githubusercontent.com/36217195/123738275-72303280-d8df-11eb-9232-1aea75d10774.png)
-
-
-
-
-
-### 새 버전으로 배포되는 중 (구버전, 신버전 공존)
-
-![image](https://user-images.githubusercontent.com/82795726/121106857-d06a7800-c841-11eb-85cd-d7ad08ff62db.png)
-
-- readiness 옵션 추가하여 배포
-
-![image](https://user-images.githubusercontent.com/82795726/121106445-fc392e00-c840-11eb-9b8c-b413ef06b95e.png)
-
-![image](https://user-images.githubusercontent.com/82795726/121106524-225ece00-c841-11eb-9953-2febeab82108.png)
-
-- Pod Describe에 Readiness 설정 확인  (?????)
-
-![image](https://user-images.githubusercontent.com/82795726/121110068-a61bb900-c847-11eb-9229-63701496846a.png)
-
-- 기존 버전과 새 버전의  pod 공존  (?????)
-
-![image](https://user-images.githubusercontent.com/82795726/121109942-6e147600-c847-11eb-9dae-9dfce13e8c62.png)
 
 
 
