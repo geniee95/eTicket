@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ticketurl
+  namespace: eticket
+data:
+  url: http://ticket:8080
