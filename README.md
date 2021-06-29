@@ -668,15 +668,14 @@ kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
 $ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://10.0.68.70:8080/reservations POST {"ticketId":"1"}'
 ```
 
-* 오토스케일 확인을 위해 모니터링을 걸어둔다.
-watch kubectl get all -n eticket
-
-kubectl get all -n eticket
-[TODO] 캡쳐
-
-
-
 - Scale out 확인
+* before
+![image](https://user-images.githubusercontent.com/36217195/123725745-984ad800-d8c9-11eb-8de9-2e961810461b.png)
+
+* after
+![image](https://user-images.githubusercontent.com/36217195/123726401-dd233e80-d8ca-11eb-8dca-8ecc799ddb98.png)
+
+
 
 ![autoscale2](https://user-images.githubusercontent.com/82795748/121107303-a4032b80-c842-11eb-958c-a64e98bda3ce.jpg)
 
