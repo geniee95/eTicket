@@ -691,10 +691,12 @@ $ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservatio
 - 
 ```shell
 kubectl create -f ./kubernetes/deployment_no_readiness.yml -n eticket
+#초기데이터 설정
+http POST http://52.231.95.4:8080/tickets ticketId=1 status=예약가능 starttime=2021-07-06 endtime=2021-07-06
 
 #siege 테스트 
 kubectl exec -it pod/siege -c siege -n eticket -- /bin/bash
-$ siege -c2 -t180S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
+$ siege -c1 -t100S -r10 -v --content-type "application/json" 'http://reservation:8080/reservations POST {"ticketId":"1"}'
 
 # app 새버전으로의 배포 시작 (두 개 버전으로 버전 바꿔가면서 테스트)
 kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:vNoReadiness2 -n eticket
