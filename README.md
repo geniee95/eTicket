@@ -651,9 +651,9 @@ $ siege -c10 -t10S -r10 -v --content-type "application/json" 'http://reservation
 
 
 ## Autoscale Out (HPA)
-앞서 서킷브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
+앞서 서킷브레이커는 빠른 실패를 통해 시스템을 안정되게 운영할 수 있게 해줬지만, 자원이 부족하여 response time이 길어지는 경우에 사용자의 요청이 실패가 된다. 따라서, 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
 ### Auto Scale-Out 설정
-ticket 서비스의 deployment.yml 파일 수정
+ticket 서비스의 deployment.yml 파일 수정 (deployment_hpa.yml)
 
         resources:
           limits:
