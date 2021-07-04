@@ -707,6 +707,7 @@ kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v5 -n eticket
 ```
 
 * readiness 미적용 경우
+- ContainerCreating 상태의 pod도 호출되어서, 요청이 오류를 반환하였다.
 
 ![image](https://user-images.githubusercontent.com/36217195/123740310-2da69600-d8e3-11eb-9ddf-3babbd409c66.png)
 
