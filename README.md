@@ -640,6 +640,7 @@ $ siege -c10 -t10S -r10 -v --content-type "application/json" 'http://reservation
 ```
 
 - 결과
+* 0.61 secs가 넘어가는 경우, 서킷브레이커가 동작하여 500 에러를 발생시킴
 
 ![image](https://user-images.githubusercontent.com/36217195/123723273-00e38600-d8c5-11eb-95ae-9beabb8b0d47.png)
 
