@@ -653,7 +653,7 @@ $ siege -c10 -t10S -r10 -v --content-type "application/json" 'http://reservation
 ## Autoscale Out (HPA)
 앞서 서킷브레이커는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다.
 ### Auto Scale-Out 설정
-deployment.yml 파일 수정
+ticket 서비스의 deployment.yml 파일 수정
 
         resources:
           limits:
@@ -662,9 +662,9 @@ deployment.yml 파일 수정
             cpu: 200m
 	    
 Auto Scale 설정
-replica를 동적으로 늘려주도록 HPA를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica를 5개까지 늘려준다.
+replica를 동적으로 늘려주도록 HPA를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica를 10개까지 늘려준다.
 ```
-kubectl autoscale deployment ticket --cpu-percent=15 --min=1 --max=5 -n eticket
+kubectl autoscale deployment ticket --cpu-percent=15 --min=1 --max=10 -n eticket
 ```
 * CB에서 했던 방식대로 워크로드를 걸어준다.
 - 부하 테스터 siege툴을 통한 서킷 브레이커 동작확인 : 동시 사용자 100명, 60초 동안 실시
