@@ -714,6 +714,7 @@ kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v5 -n eticket
 
 
 * readiness 적용한 경우
+- 컨테이너가 생성 완료된 pod만 호출되도록 보장하여, 구/신 버전이 동시에 존재하지만 오류를 발생시키지는 않는다. 
 
 ![image](https://user-images.githubusercontent.com/36217195/123739455-a86eb180-d8e1-11eb-9fdf-e9b894d6aa51.png)
 
