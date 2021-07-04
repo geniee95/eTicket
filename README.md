@@ -108,6 +108,7 @@
 ![image](https://user-images.githubusercontent.com/36217195/123537887-d383c480-d76c-11eb-9342-9055172240cd.png)
 
 6. 사용자는 티켓 예약을 취소할 수 있다.(OK)
+   티켓은 다시 '예약가능' 상태로 변경되고, 가격도 사용자 등급에 따른 할인 적용을 원복한다. 
 
 
 ![image](https://user-images.githubusercontent.com/36217195/123537943-20679b00-d76d-11eb-92fb-4dee049377c7.png)
