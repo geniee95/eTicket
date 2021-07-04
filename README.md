@@ -689,8 +689,9 @@ $ siege -c100 -t60S -r10 -v --content-type "application/json" 'http://reservatio
 
 ## Zero-downtime deploy (readiness probe)
 
-- readiness 설정 제거한 yml 파일(deployment_no_readiness.yml)로 ticket deploy 다시 생성 후, siege 부하 테스트 실행해둔 뒤 재배포 진행
-- 
+- readiness 설정은 앱의 무정지 배포가 가능하게 한다.
+- ticket 서비스에서 readiness 설정을 제거한 yml 파일(deployment_no_readiness.yml)로 deploy 생성 후, siege 부하 테스트 실행해둔 뒤 상태에서 다른 버전을 앱을 재배포 했을 때, 오류 발생 여부를 알아본다. 
+
 ```shell
 kubectl create -f ./kubernetes/deployment_no_readiness.yml -n eticket
 #초기데이터 설정
@@ -715,8 +716,6 @@ kubectl set image deployment ticket ticket=genie.azurecr.io/ticket:v5 -n eticket
 
 ![image](https://user-images.githubusercontent.com/36217195/123739455-a86eb180-d8e1-11eb-9fdf-e9b894d6aa51.png)
 
-
-[TODO siege 100% 캡쳐]
 
 
 
